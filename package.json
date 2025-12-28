@@ -1,5 +1,5 @@
 {
-  "name": "Unny Backend",
+  "name": "unny-backend",
   "version": "1.0.0",
   "description": "Backend for Unny - A Resource sharing platform for university students",
   "main": "server.js",

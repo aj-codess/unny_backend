@@ -1,0 +1,15 @@
+CREATE SCHEMA IF NOT EXISTS UnnySchema;
+
+CREATE TYPE user_role AS ENUM ('STUDENT', 'LECTURER', 'UNVERIFIED_LECTURER');
+CREATE TYPE course_status AS ENUM ('ACTIVE', 'ARCHIVED');
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    full_name VARCHAR(150) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    profile_image_url TEXT,
+    bio TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
