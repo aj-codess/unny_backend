@@ -1,7 +1,7 @@
 {
   "name": "Unny Backend",
   "version": "1.0.0",
-  "description": "Backend for Unny - A ,Resource sharing platform for university students",
+  "description": "Backend for Unny - A Resource sharing platform for university students",
   "main": "server.js",
   "type": "module",
   "scripts": {
