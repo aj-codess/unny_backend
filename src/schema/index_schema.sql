@@ -90,7 +90,7 @@ CREATE TABLE unnySchema.pinned_courses (
 
 CREATE TABLE unnySchema.notifications (
     id BIGSERIAL PRIMARY KEY,
-    recipient_id BIGINT REFERENCES circujoinSchema.users(id) ON DELETE CASCADE,
+    recipient_id BIGINT REFERENCES unnySchema.users(id) ON DELETE CASCADE,
     type_id INT REFERENCES unnySchema.notification_types(id) ON DELETE RESTRICT,
     ref_id BIGSERIAL NOT NULL REFERENCES unnySchema.organizations(id) ON DELETE CASCADE,     -- e.g., organization 
     message TEXT,      -- optional: if NULL, use default_template
