@@ -91,9 +91,8 @@ CREATE TABLE unnySchema.pinned_courses (
 CREATE TABLE unnySchema.notifications (
     id BIGSERIAL PRIMARY KEY,
     recipient_id BIGINT REFERENCES circujoinSchema.users(id) ON DELETE CASCADE,
-    type_id INT REFERENCES circujoinSchema.notification_types(id) ON DELETE RESTRICT,
-    ref_id BIGINT,     -- e.g., post id, order id
-    ref_table TEXT,    -- e.g., 'posts', 'orders'
+    type_id INT REFERENCES unnySchema.notification_types(id) ON DELETE RESTRICT,
+    ref_id BIGSERIAL NOT NULL REFERENCES unnySchema.organizations(id) ON DELETE CASCADE,     -- e.g., organization 
     message TEXT,      -- optional: if NULL, use default_template
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT now()
