@@ -55,7 +55,7 @@ const initDB = async () => {
 
     // Critical failure → crash app
     process.exit(1);
-  }
+  };
 };
 
 
