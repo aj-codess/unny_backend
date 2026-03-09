@@ -230,36 +230,16 @@ CREATE TABLE IF NOT EXISTS unnySchema.pinned_courses (
     UNIQUE (user_id, course_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_pinned_user   ON unnySchema.pinned_courses(user_id);
-CREATE INDEX IF NOT EXISTS idx_pinned_course ON unnySchema.pinned_courses(course_id);
 
-
-
--- ============================================================
---  NOTIFICATIONS
---  Fixed: was referencing circujoinSchema (wrong schema).
---  Now correctly references unnySchema for both FKs.
--- ============================================================
-
-CREATE TABLE IF NOT EXISTS unnySchema.notifications (
-    id                  BIGSERIAL PRIMARY KEY,
-    recipient_id        BIGINT          NOT NULL REFERENCES unnySchema.users(id) ON DELETE CASCADE,
-    type_id             INT             NOT NULL REFERENCES unnySchema.notification_types(id) ON DELETE RESTRICT,
-
-    -- Polymorphic reference (what triggered this notification)
-    ref_id              BIGINT,
-    ref_table           TEXT,
-
-    -- Content
-    message             TEXT,           -- overrides default_template when set
-    action_url          TEXT,           -- deep-link e.g. '/courses/123'
-
-    -- State
-    is_read             BOOLEAN         DEFAULT FALSE,
-    read_at             TIMESTAMP,
-
-    -- Audit
-    created_at          TIMESTAMP       DEFAULT now()
+CREATE TABLE unnySchema.notifications (
+    id BIGSERIAL PRIMARY KEY,
+    recipient_id BIGINT REFERENCES unnySchema.users(id) ON DELETE CASCADE,
+    type_id INT REFERENCES unnySchema.notification_types(id) ON DELETE RESTRICT,
+    ref_id BIGINT,     -- e.g., post id, order id
+    ref_table TEXT,    -- e.g., 'posts', 'orders'
+    message TEXT,      -- optional: if NULL, use default_template
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON unnySchema.notifications(recipient_id);
