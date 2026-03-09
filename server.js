@@ -6,8 +6,16 @@ import cors from "cors";
 import connectDb from "./src/config/pgDB_config.js";
 import token_helper from "./src/service/token_helper.js";
 
+import auth from "./src/routes/auth.js";
+import admin from "./src/routes/admin.js";
+import course from "./src/routes/courses.js";
+import notification from "./src/routes/notification.js";
+import organizations from "./src/routes/organizations.js";
+import search from "./src/routes/search.js";
+import users from "./src/routes/users.js";
+
 dotenv.config();
-const PORT=process.env.PORT || 5222;
+const PORT=process.env.PORT || 8080;
 
 token_helper.writePublicPrivate();
 token_helper.loadKeyToMemory();
@@ -19,7 +27,7 @@ const server=http.createServer(app);
 
 const allowedOrigins = [
   //"http://app.example.com",      // web client
-  "http://localhost:5222"         // local dev client
+  "http://localhost:8080/api/v1"         // local dev client
 ];
 
 
@@ -53,13 +61,20 @@ app.use(cookieParser(process.env.HASH_PREFIX));
 //initWebSocket(server);
 
 // when there is an unauthorized with peer server, clear access token and call ping to get a now token
-
+app.use("/auth",auth);
+app.use("/users",users);
+app.use("/organizations",organizations);
+app.use("/courses",course);
+app.use("/notification",notification);
+app.use("/search",search);
+app.use("/admin",admin);
+app.use("/refresh_token",refresh);
 app.use((req, res, next) => {
     res.status(404).json({ message: "Route not found" });
 });
 
 server.listen(PORT, () => {
 
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}/api/v1`);
 
 });

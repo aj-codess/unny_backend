@@ -58,11 +58,11 @@ import path from "path";
   
 
 
-  const signToken = async (id,session) => {
+  const signToken = async (id,session,role,org) => {
 
     return new Promise((resolve, reject) => {
       jwt.sign(
-        { id: id, session:session},
+        { id: id, session:session,role:role,org:org},
         privateKey,
         {
         algorithm: 'RS256',
@@ -82,10 +82,10 @@ import path from "path";
 
 
 
- const signRT = async (id, session) => {
+ const signRT = async (id, session,role,org) => {
   return new Promise((resolve, reject) => {
     jwt.sign(
-      { id: id, session:session },
+      { id: id, session:session,role:role,org:org},
       privateKey,
       {
         algorithm: 'RS256',
