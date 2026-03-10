@@ -21,7 +21,7 @@ CREATE SCHEMA IF NOT EXISTS unnySchema;
 -- ============================================================
 
 DO $$ BEGIN
-    CREATE TYPE user_role AS ENUM ('STUDENT', 'LECTURER', 'UNVERIFIED_LECTURER');
+    CREATE TYPE user_role AS ENUM ('STUDENT', 'LECTURER', 'UNVERIFIED_LECTURER','CREATOR');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 

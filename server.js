@@ -68,7 +68,6 @@ app.use("/courses",course);
 app.use("/notification",notification);
 app.use("/search",search);
 app.use("/admin",admin);
-app.use("/refresh_token",refresh);
 app.use((req, res, next) => {
     res.status(404).json({ message: "Route not found" });
 });
