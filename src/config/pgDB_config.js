@@ -68,7 +68,7 @@ const schema_writter = async() => {
         const index_schemaPath = path.join(__dirname, "../schema/index_schema.sql");
         const index_schemaSQL = fs.readFileSync(index_schemaPath, "utf-8");
 
-        const notification_seed_schemaPath = path.join(__dirname, "schema.sql");
+        const notification_seed_schemaPath = path.join(__dirname, "../schema/notification_seed_types.sql");
         const notification_seed_schemaSQL = fs.readFileSync(notification_seed_schemaPath, "utf-8");
 
         await client.query("BEGIN");

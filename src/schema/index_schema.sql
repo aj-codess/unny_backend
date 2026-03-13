@@ -7,6 +7,7 @@
 --  Re-running will not drop or duplicate existing data.
 -- ============================================================
 
+CREATE EXTENSION IF NOT EXISTS postgis;
 
 -- ============================================================
 --  SCHEMA
@@ -231,7 +232,7 @@ CREATE TABLE IF NOT EXISTS unnySchema.pinned_courses (
 );
 
 
-CREATE TABLE unnySchema.notifications (
+CREATE TABLE IF NOT EXISTS unnySchema.notifications (
     id BIGSERIAL PRIMARY KEY,
     recipient_id BIGINT REFERENCES unnySchema.users(id) ON DELETE CASCADE,
     type_id INT REFERENCES unnySchema.notification_types(id) ON DELETE RESTRICT,

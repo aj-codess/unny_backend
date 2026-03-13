@@ -87,4 +87,49 @@ course.delete("/:id/unpin",(req,res)=>{
 });
 
 
+// auth
+// list all document for a course
+course.get("/:id/documents/:offset/:limit",(req,res)=>{
+
+});
+
+
+// auth
+// upload a new course document
+// lecturer level
+course.post("/:id/documents",(req,res)=>{
+
+});
+
+
+// auth
+// get document metadata
+course.get("/:id/documents/:docId",(req,res)=>{
+
+});
+
+
+// auth
+// update document meta data
+// lecturer level
+course.patch("/:id/documents/:docId",(req,res)=>{
+
+});
+
+
+// auth
+// upload a new course document
+//lecturer level auth
+course.patch("/:id/documents/:docId/visibility",(req,res)=>{
+
+});
+
+
+// auth
+// delete document
+// lecturer level auth
+course.delete("/:id/documents/:docId",(req,res)=>{
+
+});
+
 export default course;

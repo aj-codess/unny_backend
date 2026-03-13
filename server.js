@@ -2,6 +2,7 @@ import express from "express";
 import http from "http";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import connectDb from "./src/config/pgDB_config.js";
 import token_helper from "./src/service/token_helper.js";
