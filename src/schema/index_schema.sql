@@ -74,6 +74,40 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON unnySchema.users(usernam
 CREATE        INDEX IF NOT EXISTS idx_users_active   ON unnySchema.users(is_active);
 
 
+
+
+
+
+
+-- RT is hashed not AT
+CREATE TABLE IF NOT EXISTS unnySchema.sessions (
+    session_id BIGINT PRIMARY KEY,
+    user_id BIGINT REFERENCES unnySchema.users(id) ON DELETE CASCADE,
+    token_hash TEXT NOT NULL,
+    device_info TEXT,
+    created_at TIMESTAMP DEFAULT now(),
+    is_active BOOLEAN DEFAULT TRUE,
+    is_online BOOLEAN DEFAULT FALSE
+);
+
+
+CREATE TABLE IF NOT EXISTS unnySchema.reset_otps (
+    session_id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES unnySchema.users(id) ON DELETE CASCADE,
+    otp TEXT UNIQUE,
+    is_verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT now(),
+    expires_at TIMESTAMP DEFAULT (now() + INTERVAL '5 minutes')
+);
+
+
+
+
+
+
+
+
+
 -- ============================================================
 --  ORGANIZATIONS
 -- ============================================================
