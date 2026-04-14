@@ -17,27 +17,32 @@ admin.get("/users/:offset/:limit",(req,res)=>{
 
 // activate a users account
 admin.patch("/users/:id/activate",(req,res)=>{
+    // manually use middleware here
     admin_controller.activate(req,res);
 });
 
 // deactivate
 admin.patch("/users/:id/dactivate",(req,res)=>{
-    admin_controller.deactivate(req,res);---
+    // manually use middleware here
+    admin_controller.deactivate(req,res);
 });
 
 
 // list all organization with owner info
 admin.get("/organizations/:offset/:limit",(req,res)=>{
+    // manually use middleware here
 
 });
 
 // list all cources accross all organization
 admin.get("/courses/:offset/:limit",(req,res)=>{
-
+    // manually use middleware here
+    
 });
 
 // get statistic
 admin.get("/stats",(req,res)=>{
+    // manually use middleware here
 
 });
 

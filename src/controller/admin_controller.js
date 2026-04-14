@@ -28,8 +28,18 @@ let deactivate = () => {
 };
 
 
+let statistic = () => {
+    try{
+
+    } catch(error){
+
+    };
+};
+
+
 export default {
     getAllUsers,
     activate,
     deactivate,
+    statistic
 }
