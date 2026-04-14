@@ -1,4 +1,5 @@
 import express from "express";
+import auth_mid from "./../middleware/authenticator.js";
 
 
 const users = express.Router();

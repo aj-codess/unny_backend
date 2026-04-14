@@ -1,4 +1,6 @@
 import express from "express";
+import auth_mid from "./../middleware/authenticator.js";
+import course_controller from "./../controller/course_controller.js";
 
 
 const course = express.Router();
@@ -65,10 +67,18 @@ course.get("/:id/enrollments/:offset/:limit",(req,res)=>{
 });
 
 
+// lecturer level auth
+// unenroll
+course.delete("/:id/unenroll",(req,res)=>{
+    course_controller.unenroll_student(req,res);
+});
+
+
+
 // auth
 // unenroll
 course.delete("/:id/enroll",(req,res)=>{
-    course_controller.unenroll_student(req,res);
+    course_controller.enroll(req,res);
 });
 
 
@@ -105,7 +115,7 @@ course.post("/:id/documents",(req,res)=>{
 // auth
 // get document metadata
 course.get("/:id/documents/:docId",(req,res)=>{
-    course_controller.get_docs_about(req,res);
+    course_controller.get_doc_about(req,res);
 });
 
 
@@ -118,10 +128,10 @@ course.patch("/:id/documents/:docId",(req,res)=>{
 
 
 // auth
-// upload a new course document
+// change document visibility
 //lecturer level auth
-course.patch("/:id/documents/:docId/visibility",(req,res)=>{
-    course_controller.upload_doc(req,res);
+course.patch("/:id/documents/:docId/:visibility",(req,res)=>{
+    course_controller.doc_visibility(req,res);
 });
 
 

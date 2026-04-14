@@ -9,7 +9,7 @@ let getAllUsers = (req,res) => {
 
 
 
-let activate = () => {
+let activate = (req,res) => {
     try{
 
     } catch(error){
@@ -19,7 +19,7 @@ let activate = () => {
 
 
 
-let deactivate = () => {
+let deactivate = (req,res) => {
     try{
 
     } catch(error){
@@ -28,7 +28,7 @@ let deactivate = () => {
 };
 
 
-let statistic = () => {
+let statistic = (req,res) => {
     try{
 
     } catch(error){

@@ -1,4 +1,6 @@
 import express from "express";
+import auth_mid from "./../middleware/authenticator.js";
+import notification_controller from "./../controller/notification_controller.js";
 
 
 const notification = express.Router();

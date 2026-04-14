@@ -1,4 +1,6 @@
 import express from "express";
+import auth_mid from "./../middleware/authenticator.js";
+import search_controller from "./../controller/search_controller.js";
 
 
 const search = express.Router();
