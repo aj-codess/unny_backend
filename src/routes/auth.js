@@ -57,6 +57,7 @@ auth.post("/reset-password",(req,res)=>{
 
 //apply auth
 auth.get("/me",(req,res)=>{
+    auth_mid(req,res);
     auth_controller.profile(req,res);
 }); 
 

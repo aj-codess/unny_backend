@@ -1,5 +1,6 @@
 import express from "express";
 import token_helper from "./../service/token_helper.js";
+import session_index from "./../service/session_manager.js";
 
 const mid_auth = express.Router();
 
@@ -32,7 +33,11 @@ mid_auth.use(async (req, res, next) => {
       req.role=decode.role;
       req.org=decode.org;
 
-      next();
+      if(session_index(req.user,req.session)){
+        next();
+      } else{
+        return res.status(429).json({status:false,message:"Too Many Request"});
+      };
 
     } else{
       console.log("The token was invalid");

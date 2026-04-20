@@ -101,9 +101,9 @@ CREATE TABLE IF NOT EXISTS unnySchema.reset_otps (
 );
 
 
-CREATE INDEX IF NOT EXISTS idx_session_token_hash ON circujoinSchema.sessions (token_hash);
-CREATE INDEX IF NOT EXISTS idx_reset_otps_lookup ON circujoinSchema.reset_otps (session_id, user_id, otp);
-CREATE INDEX IF NOT EXISTS idx_sessions_token_hash ON circujoinSchema.sessions (token_hash);
+CREATE INDEX IF NOT EXISTS idx_session_token_hash ON unnySchema.sessions (token_hash);
+CREATE INDEX IF NOT EXISTS idx_reset_otps_lookup ON unnySchema.reset_otps (session_id, user_id, otp);
+CREATE INDEX IF NOT EXISTS idx_sessions_token_hash ON unnySchema.sessions (token_hash);
 
 
 

@@ -10,6 +10,16 @@ let list = (req,res) => {
 
 
 
+let org_and_owner_list = (req,res) => {
+    try{
+
+    } catch(error){
+
+    };
+};
+
+
+
 let create_org = (req,res) => {
     try{
 
@@ -131,6 +141,7 @@ let list_pending_members = (req,res) => {
 
 
 export default {
+    org_and_owner_list,
     list,
     create_org,
     get_org_via_slug,
