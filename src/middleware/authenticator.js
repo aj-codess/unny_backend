@@ -33,7 +33,7 @@ mid_auth.use(async (req, res, next) => {
       req.role=decode.role;
       req.org=decode.org;
 
-      if(session_index(req.user,req.session)){
+      if(session_index(req.session,req.user)){
         next();
       } else{
         return res.status(429).json({status:false,message:"Too Many Request"});
