@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+import snow from "./src/utility/id_entry.js";
+
 import connectDb from "./src/config/pgDB_config.js";
 import token_helper from "./src/service/token_helper.js";
 
@@ -14,9 +16,18 @@ import notification from "./src/routes/notification.js";
 import organizations from "./src/routes/organizations.js";
 import search from "./src/routes/search.js";
 import users from "./src/routes/users.js";
+import test from "./test.js";
 
 dotenv.config();
 const PORT=process.env.PORT || 8080;
+
+const snowflake_is_initialized = snow.snow_init(1,0);
+if(snowflake_is_initialized==true){
+  console.log("Snowflake Initialized Successfully");
+} else{
+  console.log("snowflake Failed");
+  process.exit(1);
+};
 
 token_helper.writePublicPrivate();
 token_helper.loadKeyToMemory();
@@ -61,7 +72,7 @@ app.use(cookieParser(process.env.HASH_PREFIX));
 // websocker handler module
 //initWebSocket(server);
 
-// when there is an unauthorized with peer server, clear access token and call ping to get a now token
+
 app.use("/auth",auth);
 app.use("/users",users);
 app.use("/organizations",organizations);

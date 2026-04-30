@@ -47,7 +47,7 @@ END $$;
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS unnySchema.users (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  BIGINT PRIMARY KEY,
     full_name           VARCHAR(150)    NOT NULL,
     username            TEXT            UNIQUE NOT NULL,
     email               VARCHAR(255)    UNIQUE NOT NULL,
@@ -86,7 +86,7 @@ CREATE        INDEX IF NOT EXISTS idx_users_active   ON unnySchema.users(is_acti
 
 -- RT is hashed not AT
 CREATE TABLE IF NOT EXISTS unnySchema.sessions (
-    session_id BIGINT PRIMARY KEY,
+    session_id BIGSERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES unnySchema.users(id) ON DELETE CASCADE,
     token_hash TEXT NOT NULL,
     device_info TEXT,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS unnySchema.sessions (
 ALTER TABLE unnySchema.sessions
 ADD COLUMN IF NOT EXISTS university_name TEXT;
 
-CREATE INDEX IF NOT EXISTS idx_session_university ON unnySchema.session(university_name);
+CREATE INDEX IF NOT EXISTS idx_session_university ON unnySchema.sessions(university_name);
 
 
 CREATE TABLE IF NOT EXISTS unnySchema.reset_otps (
