@@ -17,7 +17,8 @@ let signup = async (req,res) => {
             password:hashed_password,
             username:username?.trim().toLowerCase(),
             bio:bio?.trim(),
-            
+            profile_url:profile_url?.trim(),
+            cover_url:cover_url?.trim()
         };
 
         const returned_payload = await auth_model.initial_writer(obj);

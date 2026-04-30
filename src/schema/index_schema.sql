@@ -69,6 +69,11 @@ CREATE TABLE IF NOT EXISTS unnySchema.users (
     updated_at          TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE unnySchema.users
+ADD COLUMN IF NOT EXISTS university_name TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_users_university ON unnySchema.users(university_name);
+
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email    ON unnySchema.users(email);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON unnySchema.users(username);
 CREATE        INDEX IF NOT EXISTS idx_users_active   ON unnySchema.users(is_active);
@@ -90,6 +95,11 @@ CREATE TABLE IF NOT EXISTS unnySchema.sessions (
     is_online BOOLEAN DEFAULT FALSE
 );
 
+ALTER TABLE unnySchema.sessions
+ADD COLUMN IF NOT EXISTS university_name TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_session_university ON unnySchema.session(university_name);
+
 
 CREATE TABLE IF NOT EXISTS unnySchema.reset_otps (
     session_id BIGSERIAL PRIMARY KEY,
@@ -103,7 +113,6 @@ CREATE TABLE IF NOT EXISTS unnySchema.reset_otps (
 
 CREATE INDEX IF NOT EXISTS idx_session_token_hash ON unnySchema.sessions (token_hash);
 CREATE INDEX IF NOT EXISTS idx_reset_otps_lookup ON unnySchema.reset_otps (session_id, user_id, otp);
-CREATE INDEX IF NOT EXISTS idx_sessions_token_hash ON unnySchema.sessions (token_hash);
 
 
 
