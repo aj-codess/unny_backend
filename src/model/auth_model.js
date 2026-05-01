@@ -1,6 +1,7 @@
 
 import pgDB from "./../config/pgDB_config.js";
 import snow from "./../utility/id_entry.js";
+import token_helper from "./../service/token_helper.js";
 
 
 let initial_writer = async (obj) => {
@@ -11,6 +12,9 @@ let initial_writer = async (obj) => {
     try{
 
         await client.query('BEGIN');
+
+        const user_id = snow.genStringified_id();
+        const session_id = snow.get_current_time();
 
         const userTable_payload = await client.query(
             `INSERT INTO unnySchema.users (
@@ -56,7 +60,7 @@ let initial_writer = async (obj) => {
       cover_image_url,
       university_name;`,
             [
-                snow.genStringified_id(),
+                user_id,
                 obj.fullname,
                 obj.username,
                 obj.email,
@@ -68,34 +72,45 @@ let initial_writer = async (obj) => {
             ]
         );
 
-        const sessionPayload_table = await client.query(
+
+        const AT = await token_helper.signToken(user_id,session_id,"temp",obj.university_name);
+        const RT = await token_helper.signRT(user_id,session_id,"temp",obj.university_name);
+        const hashed_RT = token_helper.hash_w_HMAC(RT);
+
+
+        await client.query(
             `INSERT INTO unnySchema.sessions (
-      session_id,
+      session_id
       user_id,
       token_hash,
       device_info,
       is_active,
       is_online,
-      created_at
+      created_at,
+      university_name
   )
   VALUES (
-      $6,    -- externally generated session_id
-      $1,    -- same user id from above
-      $7,    -- hashed refresh token
-      $8,    -- device_info (e.g. "Chrome on Windows", user-agent string)
+      $1,    -- externally generated session_id
+      $2,    -- same user id from above
+      $3,    -- hashed refresh token
+      $4,    -- device_info (e.g. "Chrome on Windows", user-agent string)
       TRUE,
       TRUE,
-      now()
-  )
-  RETURNING
-      session_id,
-      device_info,
-      created_at;
-            `,
-            []
+      now(),
+      $5
+  )`,
+            [session_id,user_id,hashed_RT,obj.device_info,obj.university_name]
         );
 
         await client.query('COMMIT');
+
+        return {
+            status:true,
+            message:"Account Created Successfully",
+            AT_:AT,
+            RT_:RT,
+            payload:userTable_payload
+        };
 
     } catch(error){
 

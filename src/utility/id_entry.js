@@ -89,7 +89,12 @@ const genHex_id = () => {
         });
 
     }
-}
+};
+
+
+const get_current_time = () => {
+    return Date.now();
+};
 
 
 export default {
@@ -97,5 +102,6 @@ export default {
     gen_bigInt,
     parse_id,
     genStringified_id,
-    genHex_id
+    genHex_id,
+    get_current_time
 }

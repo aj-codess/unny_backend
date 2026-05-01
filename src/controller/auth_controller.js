@@ -6,7 +6,7 @@ import {resolveUniversityEmail} from "./../service/university_email_resolver.js"
 let signup = async (req,res) => {
     try{
 
-        const {email,student_email,fullname,dob,password,username,bio,profile_url,cover_url} = req.body;
+        const {email,student_email,fullname,dob,password,username,bio,profile_url,cover_url,device_info} = req.body;
 
         const uni_obj = resolveUniversityEmail(student_email);
 
@@ -31,10 +31,24 @@ let signup = async (req,res) => {
             bio:bio?.trim(),
             profile_url:profile_url?.trim(),
             cover_url:cover_url?.trim(),
-            university_name:uni_obj.university.name
+            university_name:uni_obj.university.name,
+            device_info:device_info?.trim()
         };
 
         const returned_payload = await auth_model.initial_writer(obj);
+
+        if(returned_payload.status==true){
+
+            
+
+            res.status(200).json({
+                status:returned_payload.status,
+                data:returned_payload.payload
+            });
+
+        } else{
+
+        }
 
     } catch(error){
 

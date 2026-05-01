@@ -57,7 +57,7 @@ import path from "path";
   };
   
 
-
+// at signup, user is given a temp role
   const signToken = async (id,session,role,org) => {
 
     return new Promise((resolve, reject) => {
