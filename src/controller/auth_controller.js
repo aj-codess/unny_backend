@@ -32,21 +32,28 @@ let signup = async (req,res) => {
             profile_url:profile_url?.trim(),
             cover_url:cover_url?.trim(),
             university_name:uni_obj.university.name,
-            device_info:device_info?.trim()
+            device_info:device_info?.trim().toLowerCase()
         };
 
         const returned_payload = await auth_model.initial_writer(obj);
 
         if(returned_payload.status==true){
 
-            
+            res.setHeader("auth",`Bearer ${returned_payload.AT_}`);
+            res.setHeader("x-refresh-token",returned_payload.RT_);
 
-            res.status(200).json({
+            return res.status(200).json({
                 status:returned_payload.status,
-                data:returned_payload.payload
+                data:returned_payload.payload,
+                message:"Account Created Successfully"
             });
 
         } else{
+
+            return res.status(400).json({
+                status:false,
+                message:"Error Signing Up"
+            });
 
         }
 
@@ -68,10 +75,48 @@ let signup = async (req,res) => {
 };
 
 
-let signin = (req,res) => {
+
+
+let signin = async (req,res) => {
     try{
 
+        const {email,password,device_info} = req.body;
+
+        let obj = {
+            email:email.trim(),
+            password:password.trim(),
+            device_info:device_info?.trim().toLowerCase()
+        };
+
+        const returned_payload = await auth_model.signin(obj);
+
+        if(returned_payload.not_found){
+            res.status(404).json({status:returned_payload.status,message:returned_payload.message});
+        };
+
+        if(returned_payload.status==true){
+
+            res.setHeader("auth",`Bearer ${returned_payload.AT_}`);
+            res.setHeader("x-refresh-token",returned_payload.RT_);
+
+            return res.status(200).json({status:returned_payload.status,message:returned_payload.message});
+        };
+
+        return res.status(500).json(returned_payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error SigningUp",
+            name:error.name,
+            message:error.message,
+            stack:error.stack
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Signing In"
+        });
 
     };
 };

@@ -98,7 +98,11 @@ CREATE TABLE IF NOT EXISTS unnySchema.sessions (
 ALTER TABLE unnySchema.sessions
 ADD COLUMN IF NOT EXISTS university_name TEXT;
 
+ALTER TABLE unnySchema.sessions
+ADD COLUMN IF NOT EXISTS role TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_session_university ON unnySchema.sessions(university_name);
+CREATE INDEX IF NOT EXISTS idx_session_role       ON unnySchema.sessions(role);
 
 
 CREATE TABLE IF NOT EXISTS unnySchema.reset_otps (
@@ -146,6 +150,7 @@ CREATE TABLE IF NOT EXISTS unnySchema.organizations (
     updated_at          TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE        INDEX IF NOT EXISTS idx_org_name     ON unnySchema.organizations(name);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_orgs_slug    ON unnySchema.organizations(slug);
 CREATE        INDEX IF NOT EXISTS idx_orgs_created ON unnySchema.organizations(created_by);
 
