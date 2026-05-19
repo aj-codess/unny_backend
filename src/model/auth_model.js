@@ -445,9 +445,34 @@ let refresh_token = async(obj) => {
 }
 
 
+
+const init_forget_pass = async(obj) => {
+
+    let dbPool = pgDB.getDB();
+    const client = await dbPool.connect();
+
+    try{
+
+        await client.query('BEGIN');
+
+        const otp_key;
+
+        const session_id = snow.get_current_time();
+
+    } catch(error){
+
+    } finally{
+
+        
+
+    }
+}
+
+
 export default {
     initial_writer,
     signin,
     logout_module,
-    refresh_token
+    refresh_token,
+    init_forget_pass
 };

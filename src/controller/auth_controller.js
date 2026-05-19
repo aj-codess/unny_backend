@@ -40,7 +40,7 @@ let signup = async (req,res) => {
         if(returned_payload.status==true){
 
             res.setHeader("auth",`Bearer ${returned_payload.AT_}`);
-            res.setHeader("x-refresh-token",returned_payload.RT_);
+            res.setHeader("x-refresh-token",`Bearer ${returned_payload.RT_}`);
 
             return res.status(200).json({
                 status:returned_payload.status,
@@ -97,7 +97,7 @@ let signin = async (req,res) => {
         if(returned_payload.status==true){
 
             res.setHeader("auth",`Bearer ${returned_payload.AT_}`);
-            res.setHeader("x-refresh-token",returned_payload.RT_);
+            res.setHeader("x-refresh-token",`Bearer ${returned_payload.RT_}`);
 
             return res.status(200).json({status:returned_payload.status,message:returned_payload.message});
         };
@@ -159,19 +159,58 @@ let logout = async (req,res) => {
 
 
 
-let reassign_token = (req,res) => {
+let reassign_token = async (req,res) => {
     try{
 
-        // token 
-        // device info
+        const authHeader = req.headers["x-refresh-token"];
+
+        const tokenFromHeader =
+            authHeader && authHeader.startsWith("Bearer ")
+            ? authHeader.split(" ")[1]
+            : null;
+
+
+        const tokenFromCookie = req.cookies?.chatAuth;
+
+        const token_ = tokenFromHeader || tokenFromCookie;
+
+        if (!token_) {
+            console.log("no Refresh-token Provided");
+            return res.status(401).json({ status: false, message: "No Refresh-token provided" });
+        };
+
+        const obj = {
+            device_info : req.params.device_info,
+            token : token_
+        };
+
+        const returned_payload = await auth_model.refresh_token(obj);
+
+        if(returned_payload.status == true){
+
+            res.setHeader("auth",`Bearer ${returned_payload.AT_}`);
+            res.setHeader("x-refresh-token",`Bearer ${returned_payload.RT_}`);
+
+              return res.status(200);
+
+        } else{
+
+            return res.status(409).json(returned_payload);
+
+        };
 
     } catch(error){
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Refreshing Token"
+        });
 
     };
 };
 
 
-
+// add an email service right here
 let email_verify = (req,res) => {
     try{
 
@@ -191,9 +230,14 @@ let resend_verification = (req,res) => {
 };
 
 
-
+// email required
 let trigger_forget = (req,res) => {
     try{
+
+        const {email} = req.body;
+
+        
+
 
     } catch(error){
 
