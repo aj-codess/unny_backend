@@ -122,10 +122,37 @@ let signin = async (req,res) => {
 };
 
 
-let logout = (req,res) => {
+let logout = async (req,res) => {
     try{
 
+        const obj = {
+            session_id:req.session,
+            user_id:req.user,
+            device_info:req.params.device_info
+        }
+
+        const returned_payload = await auth_model.logout_module(obj);
+
+        if(returned_payload.status == true){
+
+            res.clearCookie();
+            res.setHeader("auth",``);
+            res.setHeader("x-refresh-token",``);
+
+            return res.status(200).json(returned_payload);
+
+        } else{
+
+            return res.status(409).json(returned_payload);
+
+        };
+
     } catch(error){
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error with Logout"
+        });
 
     };
 };
@@ -134,6 +161,9 @@ let logout = (req,res) => {
 
 let reassign_token = (req,res) => {
     try{
+
+        // token 
+        // device info
 
     } catch(error){
 

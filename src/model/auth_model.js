@@ -282,7 +282,7 @@ VALUES (
             stack:error.stack
         });
 
-        return{
+        return {
             status:false,
             message:"Internal Server Error Signing In"
         };
@@ -296,7 +296,158 @@ VALUES (
 
 
 
+let logout_module = async (obj) => {
+
+    let dbPool = pgDB.getDB();
+    const client = await dbPool.connect();
+
+    try{
+
+        await client.query('BEGIN');
+
+        let log = await client.query(
+            `
+            UPDATE unnySchema.sessions
+SET token_hash = NULL,
+    is_active = FALSE,
+    is_online = FALSE
+WHERE
+    session_id = $1
+    AND user_id = $2
+    AND device_info = $3
+RETURNING session_id;
+            `,
+            [obj.session_id,obj.user_id,obj.device_info]
+        );
+
+
+        if(log.rowCount > 0) {
+
+            return {
+                status:true,
+                message:"logged out successfully"
+            };
+
+        } else{
+
+            return {
+                status:false,
+                message:"logged out failed"
+            };
+
+        };
+
+    } catch(error){
+
+        await client.query('ROLLBACK');
+
+        console.eror(
+            {
+                name:error.name,
+                stack:error.stack,
+                message:error.message,
+                system:"Internal Server Error logging out"
+            }
+        );
+
+        return {
+            status:false,
+            message:"Internal Server Error Logging Out"
+        };
+
+    } finally{
+
+        client.release();
+
+    };
+}
+
+
+
+
+let refresh_token = async(obj) => {
+
+    let dbPool = pgDB.getDB();
+    const client = await dbPool.connect();
+
+    try{
+
+        await client.query('BEGIN');
+
+        const decode = await token_helper.verifyToken(obj.token);
+
+        if(!decode){
+            return {
+                status:false,
+                message:"Invalid Token"
+            };
+        };
+
+        const old_token_hash = token_helper.hashValue(obj.token);
+        const AT = await token_helper.signToken(decode.id,decode.session,decode.role,decode.org);
+        const RT = await token_helper.signRT(decode.id,decode.session,decode.role,decode.org);
+        const new_token_hash = token_helper.hashValue(RT);
+
+        const get_session = await client.query(
+            `
+            UPDATE unnySchema.sessions 
+            SET token_hash = $1, 
+                is_active = TRUE,
+                is_online = now()
+            WHERE 
+            session_id = $2 
+            AND user_id = $3 
+            AND token_hash = $4 
+            AND device_info = $5
+            `,
+            [new_token_hash,decode.session,decode.id,old_token_hash,obj.device_info]
+        );
+
+        if(get_session.rowCount() > 0){
+
+            return {
+                status:true,
+                AT_:AT,
+                RT_:RT
+            };
+
+        } else{
+
+            return {
+                status:false,
+            };
+
+        };
+
+    } catch(error){
+
+        await client.query('ROLLBACK');
+
+        console.eror(
+            {
+                name:error.name,
+                stack:error.stack,
+                message:error.message,
+                system:"Internal Server Error Refreshing Token"
+            }
+        );
+
+        return {
+            status:false,
+            message:"Internal Server Error Refreshing Token"
+        };
+
+    } finally{
+
+        client.release();
+
+    };
+}
+
+
 export default {
     initial_writer,
-    signin
+    signin,
+    logout_module,
+    refresh_token
 };
