@@ -97,11 +97,23 @@ const get_current_time = () => {
 };
 
 
+
+let generateSecureOTP = () => {
+
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    // Mod 100000 keeps it 5 digits, padStart handles leading zeros
+    return String(array[0] % 100000).padStart(5, '0');
+
+}
+
+
 export default {
     snow_init,
     gen_bigInt,
     parse_id,
     genStringified_id,
     genHex_id,
-    get_current_time
+    get_current_time,
+    generateSecureOTP
 }

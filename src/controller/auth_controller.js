@@ -236,7 +236,7 @@ let trigger_forget = (req,res) => {
 
         const {email} = req.body;
 
-        
+        const obj = {mail:email}
 
 
     } catch(error){

@@ -320,6 +320,7 @@ RETURNING session_id;
             [obj.session_id,obj.user_id,obj.device_info]
         );
 
+        await client.query('COMMIT');
 
         if(log.rowCount > 0) {
 
@@ -398,10 +399,12 @@ let refresh_token = async(obj) => {
             session_id = $2 
             AND user_id = $3 
             AND token_hash = $4 
-            AND device_info = $5
+            AND device_info = $5;
             `,
             [new_token_hash,decode.session,decode.id,old_token_hash,obj.device_info]
         );
+
+        await client.query('COMMIT');
 
         if(get_session.rowCount() > 0){
 
@@ -455,17 +458,70 @@ const init_forget_pass = async(obj) => {
 
         await client.query('BEGIN');
 
-        const otp_key;
+        const user_getter = await client.query(
+            `
+            SELECT id FROM unnySchema.users 
+            WHERE email = $1;
+            `,
+            [obj.mail]
+        );
 
+        if(user_getter.rowCount() == 0){
+            return {
+                status:false,
+                message:`User With ${obj.mail} Not Found`,
+            };
+        };
+
+        const otp_key = snow.generateSecureOTP();
         const session_id = snow.get_current_time();
+
+        await client.query(
+            `
+            INSERT INTO unnySchema.reset_otps (
+                session_id,
+                user_id,
+                otp,
+                is_verified,
+                created_at,
+            ) VALUES (
+              $1,
+              $2,
+              $3,
+              FALSE,
+              now()
+             )
+            `,
+            [session_id,user_getter.rows[0].id,otp_key]
+        );
+
+        await client.query('COMMIT');
+
+        // send otp key via gmail service
 
     } catch(error){
 
+        await client.query('ROLLBACK');
+
+        console.eror(
+            {
+                name:error.name,
+                stack:error.stack,
+                message:error.message,
+                system:"Internal Server Error In Changing Password"
+            }
+        );
+
+        return {
+            status:false,
+            message:"Internal Server Error In Forget Password"
+        };
+
     } finally{
 
-        
+        client.release();
 
-    }
+    };
 }
 
 
