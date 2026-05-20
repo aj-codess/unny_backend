@@ -107,7 +107,7 @@ let signin = async (req,res) => {
     } catch(error){
 
         console.error({
-            system:"Internal Server Error SigningUp",
+            system:"Internal Server Error At SigningUp",
             name:error.name,
             message:error.message,
             stack:error.stack
@@ -148,6 +148,13 @@ let logout = async (req,res) => {
         };
 
     } catch(error){
+
+        console.error({
+            message:error.message,
+            stack:error.stack,
+            system:"Internal Server Error With Logout Controller",
+            name:error.name
+        })
 
         return res.status(500).json({
             status:false,
@@ -201,6 +208,13 @@ let reassign_token = async (req,res) => {
 
     } catch(error){
 
+        console.error({
+            message:error.message,
+            stack:error.stack,
+            system:"Internal Server Error With Reassign Token Controller",
+            name:error.name
+        })
+
         return res.status(500).json({
             status:false,
             message:"Internal Server Error Refreshing Token"
@@ -231,25 +245,133 @@ let resend_verification = (req,res) => {
 
 
 // email required
-let trigger_forget = (req,res) => {
+let trigger_forget = async (req,res) => {
     try{
 
         const {email} = req.body;
 
         const obj = {mail:email}
 
+        const payload = await auth_model.init_forget_pass(obj);
+
+        if(payload.notFound == true){
+            return res.status(404).json({
+                status:payload.status,
+                message:payload.message
+            });
+        };
+
+        if(!payload.status){
+            return res.status(409).json(payload);
+        };
+
+        return res.status(200).json(payload);
 
     } catch(error){
+
+        console.error({
+            message:error.message,
+            stack:error.stack,
+            system:"Internal Server Error With Trigger Forget Password",
+            name:error.name
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Sending OTP"
+        });
 
     };
 };
 
 
 
-let trigger_new_pass = (req,res) => {
+// requirememt
+//AT 
+// otp key
+let otp_verify = async(req,res) => {
     try{
 
+        const authHeader = req.headers["auth"];
+
+        const tokenFromHeader =
+            authHeader && authHeader.startsWith("Bearer ")
+            ? authHeader.split(" ")[1]
+            : null;
+
+
+        const tokenFromCookie = req.cookies?.chatAuth;
+
+        const token_ = tokenFromHeader || tokenFromCookie;
+
+        const {otp_key} = req.body;
+
+        const obj = {
+            token,
+            otp_key
+        };
+        
+        const payload = await auth_model.otp_verifier(obj);
+
+        if(!payload.status) {
+            return res.status(409).json(payload);
+        };
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            message:error.message,
+            stack:error.stack,
+            system:"Internal Server Error With Verify OTP Controller",
+            name:error.name
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Verifying OTP"
+        });
+
+    }
+}
+
+
+// requirements 
+// AT
+// new password
+let trigger_new_pass = async (req,res) => {
+    try{
+
+        const authHeader = req.headers["auth"];
+
+        const tokenFromHeader =
+            authHeader && authHeader.startsWith("Bearer ")
+            ? authHeader.split(" ")[1]
+            : null;
+
+
+        const tokenFromCookie = req.cookies?.chatAuth;
+
+        const token_ = tokenFromHeader || tokenFromCookie;
+
+        const {new_password} = req.body;
+
+        const obj = {
+            token,
+            new_password
+        };
+
+        const returned_payload = await auth_model.new_pass_override(obj);
+
+
+
+    } catch(error){
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Overriding new password"
+        });
 
     };
 };
@@ -274,5 +396,6 @@ export default {
     email_verify,
     reassign_token,
     logout,
-    signin
+    signin,
+    otp_verify
 }

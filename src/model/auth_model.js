@@ -470,6 +470,7 @@ const init_forget_pass = async(obj) => {
             return {
                 status:false,
                 message:`User With ${obj.mail} Not Found`,
+                notFound : true
             };
         };
 
@@ -498,6 +499,15 @@ const init_forget_pass = async(obj) => {
         await client.query('COMMIT');
 
         // send otp key via gmail service
+        console.log(`otp key is - ${otp_key}`);
+
+        const AT_ = await token_helper.signToken(user_getter.rows[0].id,session_id,"","");
+
+        return {
+            status:true,
+            message:`OTP key Sent To ${obj.mail}`,
+            AT:AT_
+        };
 
     } catch(error){
 
@@ -525,10 +535,76 @@ const init_forget_pass = async(obj) => {
 }
 
 
+
+const otp_verifier = async(obj) =>{
+
+    let dbPool = pgDB.getDB();
+    const client = await dbPool.connect();
+
+    try{
+
+        await client.query('BEGIN');
+
+        const serialized_AT = await token_helper.verifyToken(obj.token);
+
+        const isVerified = await client.query(
+            `
+            UPDATE unnySchema.reset_otps 
+            SET 
+            `,
+            []
+        );
+
+    } catch(error){
+
+    } finally{
+
+    }
+}
+
+"UPDATE circujoinSchema.reset_otps "
+                "SET is_verified = TRUE "
+                "WHERE session_id = $1 AND user_id = $2 AND otp = $3 AND expires_at > now() "
+                "RETURNING 1;"
+
+const new_pass_override = async(obj) => {
+
+    let dbPool = pgDB.getDB();
+    const client = await dbPool.connect();
+
+    try{
+
+        await client.query('BEGIN');
+
+        const serialized_token = await token_helper.verifyToken(token);
+
+        if(!serialized_token){
+
+            return {
+                status:false,
+                message:"Wrong Credentials"
+            };
+
+        };
+
+
+
+    } catch(error){
+
+    } finally{
+
+        client.release();
+
+    }
+}
+
+
 export default {
     initial_writer,
     signin,
     logout_module,
     refresh_token,
-    init_forget_pass
+    init_forget_pass,
+    otp_verifier,
+    new_pass_override
 };

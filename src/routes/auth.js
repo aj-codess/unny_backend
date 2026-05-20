@@ -50,6 +50,12 @@ auth.post("/forgot-password",(req,res)=>{
 
 
 //open route
+auth.post("/otp-verify",(req,res)=>{
+    auth_controller.otp_verify(req,res);
+});
+
+
+//open route
 auth.post("/reset-password",(req,res)=>{
     auth_controller.trigger_new_pass(req,res);
 });
