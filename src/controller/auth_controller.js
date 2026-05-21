@@ -17,7 +17,7 @@ let signup = async (req,res) => {
             });
         };
 
-        const hashed_password = token_helper.hashValue(`${password.trim()}${process.env.SALT}`);
+        const hashed_password = token_helper.hashValue(`${password.trim()}`);
 
         // verify if profile_url and cover_url exist in aws before appending onto the below obj
 
@@ -364,7 +364,16 @@ let trigger_new_pass = async (req,res) => {
 
         const returned_payload = await auth_model.new_pass_override(obj);
 
+        if(!returned_payload.status){
 
+            return res.status(409).json(returned_payload);
+
+        };
+
+        res.setHeader("auth","");
+        res.setHeader("x-refresh-toke","");
+
+        return res.status(200).json(returned_payload);
 
     } catch(error){
 

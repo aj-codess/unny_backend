@@ -491,7 +491,7 @@ const init_forget_pass = async(obj) => {
               $3,
               FALSE,
               now()
-             )
+             );
             `,
             [session_id,user_getter.rows[0].id,otp_key]
         );
@@ -550,22 +550,56 @@ const otp_verifier = async(obj) =>{
         const isVerified = await client.query(
             `
             UPDATE unnySchema.reset_otps 
-            SET 
+            SET is_verified = TRUE 
+            WHERE session_id = $1 AND user_id AND otp = $3 AND expires_at > now() 
+            RETURNING 1;
             `,
-            []
+            [serialized_AT.session,serialized_AT.id,obj.otp_key]
         );
+
+        await client.query('COMMIT');
+
+        if(isVerified.rowCount() > 0){
+
+            return {
+                status:true,
+                message:"OTP Verified"
+            };
+
+        };
+
+        return {
+            status:false,
+            message:"Failed OTP Verification"
+        };
 
     } catch(error){
 
+        await client.query('ROLLBACK');
+
+        console.eror(
+            {
+                name:error.name,
+                stack:error.stack,
+                message:error.message,
+                system:"Internal Server Error In Verify OTP Model"
+            }
+        );
+
+        return {
+            status:false,
+            message:"Internal Server Error While Verifying OTP"
+        };
+
     } finally{
 
-    }
+        client.release();
+
+    };
 }
 
-"UPDATE circujoinSchema.reset_otps "
-                "SET is_verified = TRUE "
-                "WHERE session_id = $1 AND user_id = $2 AND otp = $3 AND expires_at > now() "
-                "RETURNING 1;"
+
+
 
 const new_pass_override = async(obj) => {
 
@@ -587,9 +621,60 @@ const new_pass_override = async(obj) => {
 
         };
 
+        const reset_otp_data = await client.query(
+            `
+            SELECT 1 FROM unnySchema.reset_otps 
+            WHERE session_id = $1 AND user_id = $2 AND is_verified = TRUE;
+            `,
+            [serialized_token.session,serialized_token.id]
+        );
 
+        if(reset_otp_data.rowCount > 0){
+
+            const pass_hash = token_helper.hashValue(`${obj.new_password}`);
+
+            await client.query(
+                `
+                UPDATE unnySchema.users 
+                SET password_hash = $1 
+                WHERE id = $2;
+                `,
+                [pass_hash,serialized_token.id]
+            );
+
+            await client.query('COMMIT');
+
+            return {
+                status:true,
+                message:"New Password Saved"
+            };
+
+        };
+
+        await client.query('COMMIT');
+
+        return {
+            status:false,
+            message:"Incorrect Data Recieved"
+        };
 
     } catch(error){
+
+        await client.query('ROLLBACK');
+
+         console.eror(
+            {
+                name:error.name,
+                stack:error.stack,
+                message:error.message,
+                system:"Internal Server Error Override New Password Model"
+            }
+        );
+
+        return {
+            status:false,
+            message:"Internal Server Error While Overriding New Password"
+        };
 
     } finally{
 
