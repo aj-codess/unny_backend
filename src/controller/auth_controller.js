@@ -358,7 +358,7 @@ let trigger_new_pass = async (req,res) => {
         const {new_password} = req.body;
 
         const obj = {
-            token,
+            token:token_,
             new_password
         };
 

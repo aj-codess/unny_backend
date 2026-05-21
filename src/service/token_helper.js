@@ -164,7 +164,7 @@ const hash_w_HMAC=(token)=>{
   try{
 
     return crypto
-    .createHmac("sha256", process.env.SECRET_KEY)
+    .createHmac("sha256", process.env.SALT)
     .update(token)
     .digest("hex");
 

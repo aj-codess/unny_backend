@@ -41,7 +41,7 @@ let initial_writer = async (obj) => {
       TRUE,
       FALSE,
       now(),
-      now()
+      now(),
       $6,
       $7,
       $8,
@@ -80,7 +80,7 @@ let initial_writer = async (obj) => {
 
         await client.query(
             `INSERT INTO unnySchema.sessions (
-      session_id
+      session_id,
       user_id,
       token_hash,
       device_info,
@@ -98,7 +98,7 @@ let initial_writer = async (obj) => {
       TRUE,
       now(),
       $5
-  )`,
+  );`,
             [session_id,user_id,hashed_RT,obj.device_info,obj.university_name]
         );
 
@@ -216,7 +216,6 @@ LIMIT 1;
                 
                 };
 
-                await client.query('COMMIT');
 
                 return {
                     status:true,
@@ -226,7 +225,7 @@ LIMIT 1;
                 };
         };
 
-
+        await client.query('COMMIT');
 
             const session_id = snow.get_current_time();
 
@@ -308,8 +307,8 @@ let logout_module = async (obj) => {
         let log = await client.query(
             `
             UPDATE unnySchema.sessions
-SET token_hash = NULL,
-    is_active = FALSE,
+SET token_hash = NULL AND
+    is_active = FALSE AND
     is_online = FALSE
 WHERE
     session_id = $1
@@ -342,7 +341,7 @@ RETURNING session_id;
 
         await client.query('ROLLBACK');
 
-        console.eror(
+        console.error(
             {
                 name:error.name,
                 stack:error.stack,
@@ -392,8 +391,8 @@ let refresh_token = async(obj) => {
         const get_session = await client.query(
             `
             UPDATE unnySchema.sessions 
-            SET token_hash = $1, 
-                is_active = TRUE,
+            SET token_hash = $1 AND 
+                is_active = TRUE AND
                 is_online = now()
             WHERE 
             session_id = $2 
@@ -406,7 +405,7 @@ let refresh_token = async(obj) => {
 
         await client.query('COMMIT');
 
-        if(get_session.rowCount() > 0){
+        if(get_session.rowCount > 0){
 
             return {
                 status:true,
@@ -426,7 +425,7 @@ let refresh_token = async(obj) => {
 
         await client.query('ROLLBACK');
 
-        console.eror(
+        console.error(
             {
                 name:error.name,
                 stack:error.stack,
@@ -466,7 +465,7 @@ const init_forget_pass = async(obj) => {
             [obj.mail]
         );
 
-        if(user_getter.rowCount() == 0){
+        if(user_getter.rowCount == 0){
             return {
                 status:false,
                 message:`User With ${obj.mail} Not Found`,
@@ -513,7 +512,7 @@ const init_forget_pass = async(obj) => {
 
         await client.query('ROLLBACK');
 
-        console.eror(
+        console.error(
             {
                 name:error.name,
                 stack:error.stack,
@@ -559,7 +558,7 @@ const otp_verifier = async(obj) =>{
 
         await client.query('COMMIT');
 
-        if(isVerified.rowCount() > 0){
+        if(isVerified.rowCount > 0){
 
             return {
                 status:true,
@@ -577,7 +576,7 @@ const otp_verifier = async(obj) =>{
 
         await client.query('ROLLBACK');
 
-        console.eror(
+        console.error(
             {
                 name:error.name,
                 stack:error.stack,
@@ -610,7 +609,7 @@ const new_pass_override = async(obj) => {
 
         await client.query('BEGIN');
 
-        const serialized_token = await token_helper.verifyToken(token);
+        const serialized_token = await token_helper.verifyToken(obj.token);
 
         if(!serialized_token){
 
@@ -662,7 +661,7 @@ const new_pass_override = async(obj) => {
 
         await client.query('ROLLBACK');
 
-         console.eror(
+         console.error(
             {
                 name:error.name,
                 stack:error.stack,
