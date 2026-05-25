@@ -40,11 +40,6 @@ let get_profile = async (req,res) => {
 let update_profile = async (req,res) => {
     try{
 
-        obj.full_name   ?? null,
-                obj.bio         ?? null,
-                obj.website_url ?? null,
-                obj.target_id
-
         const {full_name,bio,website_url} = req.body;
 
         const obj = {
@@ -88,18 +83,17 @@ let update_profile = async (req,res) => {
 };
 
 
-let change_profile_image = (req,res) => {
+let change_profile_image = async (req,res) => {
     try{
 
         const {profile_url} = req.body;
-        const target_id = req.user;
 
         const obj = {
             image_url : profile_url,
-            target_id
+            target_id : req.user
         };
 
-        const payload = user_model.change_profile_image(obj);
+        const payload = await user_model.change_profile_image(obj);
 
         if(payload.status == false){
             return res.status(409).json(payload);
@@ -126,50 +120,174 @@ let change_profile_image = (req,res) => {
 
 
 
-let change_cover_image = (req,res) => {
+let change_cover_image = async (req,res) => {
     try{
 
+        const {image_url} = req.body;
+
+        const obj = {
+            target_id : req.user,
+            image_url
+        };
+
+        const payload = await user_model.change_cover_image(obj);
+
+        if(payload.status == false){
+            return res.status(409).json(payload);
+        };
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Change Cover Image Model",
+            name:error.name,
+            message:error.message,
+            stack:error.stack
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Changing User Profile Image"
+        });
 
     };
 };
 
 
 
-let change_account_password = (req,res) => {
+let change_account_password = async (req,res) => {
     try{
 
+        const {current_password,new_password} = req.body;
+        
+        const obj = {
+            current_password,
+            new_password,
+            target_id : req.user,
+            session_id : req.session
+        };
+
+        const payload = await user_model.change_account_password(obj);
+
+        if(payload.status == false ){
+            return res.status(409).json(payload);
+        };
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Change Account Password",
+            name:error.name,
+            message:error.message,
+            stack:error.stack
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Changing Account Password"
+        });
 
     };
 };
 
 
 
-let delete_account = (req,res) => {
+let delete_account = async (req,res) => {
     try{
 
+        const obj = {
+            target_id : req.user
+        };
+
+        const payload = await user_model.delete_account(obj);
+
+        if(payload.status == false){
+            return res.status(409).json(payload);
+        };
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Delete Account Model",
+            name:error.name,
+            message:error.message,
+            stack:error.stack
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Deleting User Account"
+        });
 
     };
 };
 
 
 
-let get_user_orgs = (req,res) => {
+let get_user_orgs = async (req,res) => {
     try{
 
+        const obj = {
+            target_id : req.user,
+            offset : req.params.offset,
+            limit : req.params.limit
+        };
+
+        const payload = await user_model.get_user_orgs(obj);
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Get Account Org Model",
+            name:error.name,
+            message:error.message,
+            stack:error.stack
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Organizations"
+        });
 
     };
 };
 
 
 
-let get_user_course_enrolled = (req,res) => {
+let get_user_course_enrolled = async (req,res) => {
     try{
 
+        const obj = {
+            target_id : req.user,
+            offset : req.params.offset,
+            limit : req.params.limit
+        };
+
+        const payload = await user_model.get_user_course_enrolled(obj);
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Get Account Course Enrolled Model",
+            name:error.name,
+            message:error.message,
+            stack:error.stack
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Courses Enrolled"
+        });
 
     };
 };
@@ -177,10 +295,32 @@ let get_user_course_enrolled = (req,res) => {
 
 
 
-let get_pinned_courses = (req,res) => {
+let get_pinned_courses = async (req,res) => {
     try{
 
+        const obj = {
+            target_id : req.user,
+            offset : req.params.offset,
+            limit : req.params.limit
+        };
+
+        const payload = await user_model.get_pinned_courses(obj);
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Get Account Pinned Course Model",
+            name:error.name,
+            message:error.message,
+            stack:error.stack
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Pinned Courses"
+        });
 
     };
 };
