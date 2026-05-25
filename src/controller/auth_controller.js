@@ -128,7 +128,7 @@ let logout = async (req,res) => {
         const obj = {
             session_id:req.session,
             user_id:req.user,
-            device_info:req.params.device_info
+            device_info:req.params.device_info.trim().toLowerCase()
         }
 
         const returned_payload = await auth_model.logout_module(obj);
