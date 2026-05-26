@@ -67,16 +67,7 @@ let create_org = async (req,res) => {
     try{
 
         const {
-            slug,
-            profile_image_url,
-            cover_image_url,
-            description,
-            website_url,
-            contact_email,
-            access_mode
-        } = req.body;
-
-        const obj = {
+            name,
             slug,
             profile_image_url,
             cover_image_url,
@@ -84,8 +75,25 @@ let create_org = async (req,res) => {
             website_url,
             contact_email,
             access_mode,
+            location,
+            type
+        } = req.body;
+
+        // write the name of the organization to the registry if it does not exist
+
+        const obj = {
+            name:name?.trim(),
+            slug:slug?.trim(),
+            profile_image_url:profile_image_url?.trim(),
+            cover_image_url:cover_image_url?.trim(),
+            description:description?.trim().toLowerCase(),
+            website_url:website_url?.trim(),
+            contact_email:contact_email?.trim(),
+            access_mode:access_mode?.trim(),
             creator_id : req.user
         };
+
+        
 
     } catch(error){
 
