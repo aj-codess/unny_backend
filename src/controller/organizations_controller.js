@@ -1,6 +1,100 @@
+import org_model from "./../model/org_model.js";
+
+let list = async (req,res) => {
+    try{
+
+        const obj = {
+            offset:req.params.offset,
+            limit:req.params.limit
+        };
+
+        const payload = await org_model.list(obj);
+
+        return res.status(200).json(payload);
+
+    } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Listing Organization",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Organization List"
+        });
+
+    };
+};
 
 
-let list = (req,res) => {
+
+let org_and_owner_list = async (req,res) => {
+    try{
+
+        const obj = {
+            offset:req.params.offset,
+            limit:req.params.limit
+        };
+
+        const payload = await org_model.org_and_owner_list(obj);
+
+        return res.status(200).json(payload);
+
+    } catch(error){
+
+
+        console.error({
+            system:"Internal Server Error At Listing Organization Owners Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Organizations Owner List"
+        });
+
+    };
+};
+
+
+
+let create_org = async (req,res) => {
+    try{
+
+        const {
+            slug,
+            profile_image_url,
+            cover_image_url,
+            description,
+            website_url,
+            contact_email,
+            access_mode
+        } = req.body;
+
+        const obj = {
+            slug,
+            profile_image_url,
+            cover_image_url,
+            description,
+            website_url,
+            contact_email,
+            access_mode,
+            creator_id : req.user
+        };
+
+    } catch(error){
+
+    };
+};
+
+
+
+let get_org_via_slug = async (req,res) => {
     try{
 
     } catch(error){
@@ -10,7 +104,7 @@ let list = (req,res) => {
 
 
 
-let org_and_owner_list = (req,res) => {
+let update = async (req,res) => {
     try{
 
     } catch(error){
@@ -20,7 +114,7 @@ let org_and_owner_list = (req,res) => {
 
 
 
-let create_org = (req,res) => {
+let update_logo = async (req,res) => {
     try{
 
     } catch(error){
@@ -30,7 +124,7 @@ let create_org = (req,res) => {
 
 
 
-let get_org_via_slug = (req,res) => {
+let update_cover = async (req,res) => {
     try{
 
     } catch(error){
@@ -39,8 +133,7 @@ let get_org_via_slug = (req,res) => {
 };
 
 
-
-let update = (req,res) => {
+let delete_org = async (req,res) => {
     try{
 
     } catch(error){
@@ -49,36 +142,7 @@ let update = (req,res) => {
 };
 
 
-
-let update_logo = (req,res) => {
-    try{
-
-    } catch(error){
-
-    };
-};
-
-
-
-let update_cover = (req,res) => {
-    try{
-
-    } catch(error){
-
-    };
-};
-
-
-let delete_org = (req,res) => {
-    try{
-
-    } catch(error){
-
-    };
-};
-
-
-let member_list = (req,res) => {
+let member_list = async (req,res) => {
     try{
 
     } catch(error){
@@ -89,7 +153,7 @@ let member_list = (req,res) => {
 
 
 
-let join_request = (req,res) => {
+let join_request = async (req,res) => {
     try{
 
     } catch(error){
@@ -100,7 +164,7 @@ let join_request = (req,res) => {
 
 
 
-let verify = (req,res) => {
+let verify = async (req,res) => {
     try{
 
     } catch(error){
@@ -110,7 +174,7 @@ let verify = (req,res) => {
 
 
 
-let change_role = (req,res) => {
+let change_role = async (req,res) => {
     try{
 
     } catch(error){
@@ -120,7 +184,7 @@ let change_role = (req,res) => {
 
 
 
-let remove_member = (req,res) => {
+let remove_member = async (req,res) => {
     try{
 
     } catch(error){
@@ -130,7 +194,7 @@ let remove_member = (req,res) => {
 
 
 
-let list_pending_members = (req,res) => {
+let list_pending_members = async (req,res) => {
     try{
 
     } catch(error){
