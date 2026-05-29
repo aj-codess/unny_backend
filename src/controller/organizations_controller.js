@@ -385,7 +385,36 @@ let join_request = async (req,res) => {
 let verify = async (req,res) => {
     try{
 
+        const {org_id,assigned_role,target_user_id} = req.body;
+
+        const obj = {
+            org_id,
+            assigned_role:assigned_role?.trim().toUpperCase(),
+            target_user_id,
+            caller_id:req.user
+        };
+
+        const payload = await org_model.verify(obj);
+
+        if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(409).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Verify User Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Verifying User"
+        });
 
     };
 };
@@ -395,7 +424,36 @@ let verify = async (req,res) => {
 let change_role = async (req,res) => {
     try{
 
+        const {org_id,target_user_id,new_role} = req.body;
+
+        const obj = {
+            org_id,
+            target_user_id,
+            new_role:new_role?.trim().toUpperCase(),
+            caller_id:req.user
+        };
+
+        const payload = await org_model.change_role(obj);
+
+        if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(409).jsopn(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Change User Role Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Changing User Role"
+        });
 
     };
 };
@@ -405,7 +463,33 @@ let change_role = async (req,res) => {
 let remove_member = async (req,res) => {
     try{
 
+        const obj = {
+            target_user_id:req.params.target_user_id,
+            caller_id:req.user,
+            org_id:req.params.org_id
+        };
+
+        const payload = await org_model.remove_member(obj);
+
+        if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(409).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Remove Member Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Removing Member"
+        });
 
     };
 };
@@ -415,7 +499,29 @@ let remove_member = async (req,res) => {
 let list_pending_members = async (req,res) => {
     try{
 
+        const obj = {
+            org_id:req.params.org_id,
+            offset:req.params.offset,
+            limit:req.params.limit    
+        };
+
+        const payload = await org_model.list_pending_members(obj);
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At List Pending Members Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Listing Pending Members"
+        });
 
     };
 };
