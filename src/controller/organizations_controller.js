@@ -176,7 +176,25 @@ let update = async (req,res) => {
 
         const payload = await org_model.update(obj);
 
+        if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(409).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Update Org Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Updating Organization"
+        });
 
     };
 };
@@ -186,7 +204,35 @@ let update = async (req,res) => {
 let update_logo = async (req,res) => {
     try{
 
+        const {org_id,image_url} = req.body;
+
+        const obj = {
+            org_id,
+            image_url:image_url?.trim(),
+            caller_id : req.user
+        };
+
+        const payload = await org_model.update_logo(obj);
+
+        if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+        
+        return res.status(409).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Update Org Logo",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Updating Organization Logo"
+        });
 
     };
 };
@@ -196,7 +242,35 @@ let update_logo = async (req,res) => {
 let update_cover = async (req,res) => {
     try{
 
+        const {org_id,image_url} = req.body;
+
+        const obj = {
+            org_id,
+            image_url:image_url?.trim(),
+            caller_id:req.user
+        }
+
+        const payload = await org_model.update_cover(obj);
+
+        if(payload.status==true){
+            return res.status(200).hjson(payload);
+        };
+
+        return res.status(409).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Update Org Cover Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Updating Organization Cover Image"
+        });
 
     };
 };
@@ -205,7 +279,32 @@ let update_cover = async (req,res) => {
 let delete_org = async (req,res) => {
     try{
 
+        const obj = {
+            org_id:req.params.org_id,
+            caller_id:req.user
+        };
+
+        const payload = await org_model.delete_org(obj);
+
+        if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(409).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Delete Org Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Deleting Organization"
+        });
 
     };
 };
@@ -214,7 +313,29 @@ let delete_org = async (req,res) => {
 let member_list = async (req,res) => {
     try{
 
+        const obj = {
+            org_id:req.params.org_id,
+            offset:req.params.offset,
+            limit:req.params.limit
+        };
+
+        const payload = await org_model.member_list(obj);
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At List Org Member Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Member List"
+        });
 
     };
 };
@@ -225,7 +346,35 @@ let member_list = async (req,res) => {
 let join_request = async (req,res) => {
     try{
 
+        const {org_id,role} = req.body;
+
+        const obj = {
+            org_id,
+            role:role?.trim().toUpperCase(),
+            user_id:req.user
+        };
+
+        const payload = await org_model.join_request(obj);
+
+        if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Join Request Model",
+            stack:error.stack,
+            name:error.name,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Joining Organization"
+        });
 
     };
 };

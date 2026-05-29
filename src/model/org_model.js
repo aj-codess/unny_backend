@@ -611,10 +611,10 @@ const delete_org = async (obj) => {
         const result = await dbPool.query(
             `
             DELETE FROM unnySchema.organizations
-            WHERE id = $1
+            WHERE id = $1 AND created_by = $2 
             RETURNING id, name, slug;
             `,
-            [obj.org_id]
+            [obj.org_id,obj.caller_id]
         );
 
         if (result.rowCount === 0) {
@@ -737,7 +737,7 @@ const join_request = async (obj) => {
 
     try {
 
-        const member_id = snow.genStringified_id();
+        const member_id = snow.get_current_time();
 
         const result = await dbPool.query(
             `
