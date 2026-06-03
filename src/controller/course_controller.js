@@ -179,7 +179,37 @@ let update_meta_data = async (req,res) => {
 let load_date = async (req,res) => {
     try{
 
+        const {course_id,cover_image_url} = req.body;
+
+        const obj = {
+            course_id,
+            cover_image_url:cover_image_url?.trim(),
+            caller_id:req.user
+        };
+
+        const payload = await course_model.load_date(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == false){
+           return res.status(500).json(payload);
+        };
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With update Course Cover Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Updating Course Cover Image"
+        });
 
     };
 };
@@ -189,7 +219,34 @@ let load_date = async (req,res) => {
 let archive = async (req,res) => {
     try{
 
+        const obj = {
+            course_id : req.params.course_id,
+            caller_id : req.user
+        };
+
+        const payload = await course_model.archive(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == false){
+           return res.status(500).json(payload);
+        };
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Archive Course Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Putting Course Under Archive"
+        });
 
     };
 };
@@ -199,7 +256,33 @@ let archive = async (req,res) => {
 let delete_course = async (req,res) => {
     try{
 
+        const obj = {
+            course_id : req.params.course_id
+        };
+
+        const payload = await course_model.delete_course(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == false){
+           return res.status(500).json(payload);
+        };
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Delete Course Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Deleting Course"
+        });
 
     };
 };
@@ -210,7 +293,36 @@ let delete_course = async (req,res) => {
 let enroll = async (req,res) => {
     try{
 
+        const obj = {
+            course_id : req.params.course_id,
+            user_id : req.user
+        };
+
+        const payload = await course_model.enroll(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == false && payload.conflict == true){
+            return res.status(409).json(payload);
+        } else if(payload.status == false){
+           return res.status(500).json(payload);
+        };
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Enroll Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Enrolling Unto Course"
+        });
 
     };
 };
@@ -222,7 +334,29 @@ let enroll = async (req,res) => {
 let enrolled = async (req,res) => {
     try{
 
+        const obj = {
+            course_id:req.params.course_id,
+            offset:req.params.offset,
+            limit:req.params.limit
+        };
+
+        const payload = await course_model.enrolled(obj);
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Enrolled Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Listing Enrolled Students"
+        });
 
     };
 };
@@ -232,7 +366,37 @@ let enrolled = async (req,res) => {
 let unenroll_student = async (req,res) => {
     try{
 
+        const {course_id,target_id} = req.body;
+
+        const obj = {
+            course_id,
+            target_user_id:target_id?target_id:null,
+            caller_id: req.user
+        };
+
+        const payload = await course_model.unenroll_student(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Unenroll Student Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Enrolling Student"
+        });
 
     };
 };
@@ -242,7 +406,36 @@ let unenroll_student = async (req,res) => {
 let pin = async (req,res) => {
     try{
 
+        const obj = {
+            course_id : req.params.course_id,
+            user_id : req.user
+        };
+
+        const payload = await course_model.pin(obj);
+
+        if(payload.status == false && payload.conflict == true){
+            return res.status(409).json(payload);
+        } else if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Pin Course Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Pinning Course To Profile"
+        });
 
     };
 };
@@ -252,7 +445,32 @@ let pin = async (req,res) => {
 let unpin = async (req,res) => {
     try{
 
+        const obj = {
+            user_id:req.user,
+            course_id:req.params.course_id
+        };
+
+        const payload = await course_model.unpin(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else{
+            return res.status(200).json(payload);
+        };
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Unpin Course Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Unpinning Course From Profile"
+        });
 
     };
 };
@@ -262,7 +480,31 @@ let unpin = async (req,res) => {
 let get_docs = async (req,res) => {
     try{
 
+        const {course_id,offset,limit} = req.body;
+
+        const obj = {
+            course_id,
+            offset,
+            limit
+        };
+
+        const payload = await course_model.get_docs(obj);
+
+        return res.status(200).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Get Docs Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Course Docs"
+        });
 
     };
 };

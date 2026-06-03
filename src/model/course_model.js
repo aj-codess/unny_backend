@@ -580,7 +580,7 @@ const enroll = async (obj) => {
 
     try {
 
-        const enrollment_id = snow.genStringified_id();
+        const enrollment_id = snow.get_current_time();
 
         const result = await dbPool.query(
             `
@@ -723,16 +723,37 @@ const unenroll_student = async (obj) => {
 
     try {
 
-        const result = await dbPool.query(
+        let result;
+
+        if(obj.target_user_id != null){
+
+            result = await dbPool.query(
             `
             DELETE FROM unnySchema.course_enrollments
             WHERE
                 course_id = $1
-                AND user_id   = $2
+                AND user_id   = $2 
+                AND created_by = $3 
             RETURNING id, user_id, course_id;
             `,
-            [obj.course_id, obj.target_user_id]
+            [obj.course_id, obj.target_user_id,obj.caller_id]
+            );
+
+        } else{
+
+            result = await dbPool.query(
+            `
+            DELETE FROM unnySchema.course_enrollments
+            WHERE
+                course_id = $1
+                AND user_id   = $2 
+            RETURNING id, user_id, course_id;
+            `,
+            [obj.course_id, obj.caller_id]
         );
+
+        };
+
 
         if (result.rowCount === 0) {
             return {
@@ -780,7 +801,7 @@ const pin = async (obj) => {
 
     try {
 
-        const pin_id = snow.genStringified_id();
+        const pin_id = snow.get_current_time();
 
         const result = await dbPool.query(
             `
@@ -928,6 +949,8 @@ const get_docs = async (obj) => {
                 u.id                 AS uploader_id,
                 u.full_name          AS uploader_name,
                 u.profile_image_url  AS uploader_avatar
+
+                
 
             FROM unnySchema.course_documents cd
 
