@@ -933,41 +933,53 @@ const get_docs = async (obj) => {
     try {
 
         const result = await dbPool.query(
-            `
-            SELECT
-                cd.id,
-                cd.title,
-                cd.description,
-                cd.file_url,
-                cd.thumbnail_url,
-                cd.file_type,
-                cd.file_size_bytes,
-                cd.original_filename,
-                cd.is_visible,
-                cd.created_at,
+    `
+    SELECT
+        cd.id,
+        cd.title,
+        cd.description,
+        cd.file_url,
+        cd.thumbnail_url,
+        cd.file_type,
+        cd.file_size_bytes,
+        cd.original_filename,
+        cd.is_visible,
+        cd.created_at,
 
-                u.id                 AS uploader_id,
-                u.full_name          AS uploader_name,
-                u.profile_image_url  AS uploader_avatar
+        u.id                 AS uploader_id,
+        u.full_name          AS uploader_name,
+        u.profile_image_url  AS uploader_avatar
 
-                
+    FROM unnySchema.course_documents cd
 
-            FROM unnySchema.course_documents cd
+    INNER JOIN unnySchema.users u
+            ON u.id = cd.uploaded_by
 
-            INNER JOIN unnySchema.users u
-                    ON u.id = cd.uploaded_by
+    -- confirm caller is enrolled in this specific course
+    INNER JOIN unnySchema.course_enrollments ce
+            ON  ce.course_id = cd.course_id
+            AND ce.user_id   = $4
 
-            WHERE
-                cd.course_id  = $1
-                AND cd.is_visible = TRUE
+    -- confirm caller is a verified member of the org that owns the course
+    INNER JOIN unnySchema.courses c
+            ON c.id = cd.course_id
 
-            ORDER BY cd.created_at DESC
+    INNER JOIN unnySchema.organization_members om
+            ON  om.organization_id = c.organization_id
+            AND om.user_id         = $4
+            AND om.is_verified     = TRUE
 
-            LIMIT  $2
-            OFFSET $3;
-            `,
-            [obj.course_id, obj.limit, obj.offset]
-        );
+    WHERE
+        cd.course_id  = $1
+        AND cd.is_visible = TRUE
+
+    ORDER BY cd.created_at DESC
+
+    LIMIT  $2
+    OFFSET $3;
+    `,
+    [obj.course_id, obj.limit, obj.offset, obj.user_id]
+);
 
         return {
             status: true,
@@ -1006,54 +1018,71 @@ const upload_doc = async (obj) => {
 
     try {
 
-        const doc_id = snow.genStringified_id();
+        const doc_id = snow.get_current_time();
 
         const result = await dbPool.query(
-            `
-            INSERT INTO unnySchema.course_documents (
-                id,
-                course_id,
-                uploaded_by,
-                title,
-                description,
-                file_url,
-                thumbnail_url,
-                file_type,
-                file_size_bytes,
-                original_filename,
-                is_visible,
-                created_at,
-                updated_at
-            )
-            VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                TRUE,
-                now(), now()
-            )
-            RETURNING
-                id,
-                title,
-                description,
-                file_url,
-                file_type,
-                file_size_bytes,
-                original_filename,
-                is_visible,
-                created_at;
-            `,
-            [
-                doc_id,
-                obj.course_id,
-                obj.uploader_id,
-                obj.title,
-                obj.description      ?? null,
-                obj.file_url,
-                obj.thumbnail_url    ?? null,
-                obj.file_type        ?? null,
-                obj.file_size_bytes  ?? null,
-                obj.original_filename ?? null
-            ]
-        );
+    `
+    INSERT INTO unnySchema.course_documents (
+        id,
+        course_id,
+        uploaded_by,
+        title,
+        description,
+        file_url,
+        thumbnail_url,
+        file_type,
+        file_size_bytes,
+        original_filename,
+        is_visible,
+        created_at,
+        updated_at
+    )
+    SELECT
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+        TRUE,
+        now(), now()
+
+    -- confirm the uploader is enrolled in this course
+    FROM unnySchema.course_enrollments ce
+
+    -- confirm the uploader is a verified LECTURER or CREATOR in the org
+    INNER JOIN unnySchema.courses c
+            ON  c.id = $2
+
+    INNER JOIN unnySchema.organization_members om
+            ON  om.organization_id = c.organization_id
+            AND om.user_id         = $3
+            AND om.is_verified     = TRUE
+            AND om.role            IN ('LECTURER', 'CREATOR')
+
+    WHERE
+        ce.course_id = $2
+        AND ce.user_id   = $3
+
+    RETURNING
+        id,
+        title,
+        description,
+        file_url,
+        file_type,
+        file_size_bytes,
+        original_filename,
+        is_visible,
+        created_at;
+    `,
+    [
+        doc_id,
+        obj.course_id,
+        obj.uploader_id,
+        obj.title,
+        obj.description       ?? null,
+        obj.file_url,
+        obj.thumbnail_url     ?? null,
+        obj.file_type         ?? null,
+        obj.file_size_bytes   ?? null,
+        obj.original_filename ?? null
+    ]
+);
 
         return {
             status: true,

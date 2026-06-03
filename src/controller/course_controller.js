@@ -485,7 +485,8 @@ let get_docs = async (req,res) => {
         const obj = {
             course_id,
             offset,
-            limit
+            limit,
+            user_id:req.user
         };
 
         const payload = await course_model.get_docs(obj);
@@ -514,7 +515,50 @@ let get_docs = async (req,res) => {
 let upload_doc = async (req,res) => {
     try{
 
+        const {
+            course_id,
+            title,
+            description,
+            file_url,
+            thumbnail_url,
+            file_type,
+            file_size_bytes,
+            original_filename
+        } = req.body;
+
+        const obj = {
+            course_id,
+            uploader_id:req.user,
+            title:title?.trim().toLowerCase(),
+            description:description?.trim().toLowerCase(),
+            file_url:file_url?.trim(),
+            thumbnail_url:thumbnail_url?.trim(),
+            file_type:file_type?.trim(),
+            file_size_bytes,
+            original_filename:original_filename?.trim()
+        };
+
+        const payload = await course_model.upload_doc(obj);
+
+        if(payload.status==false && payload.not_found==true){
+            return res.status(404).json(payload);
+        } else{
+            return res.status(200).json(payload);
+        };
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error With Upload Docs Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Uploading Document"
+        });
 
     };
 };
