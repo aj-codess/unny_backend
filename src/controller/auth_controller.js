@@ -1,6 +1,7 @@
 import auth_model from "./../model/auth_model.js";
 import token_helper from "./../service/token_helper.js";
 import {resolveUniversityEmail} from "./../service/university_email_resolver.js";
+import user_model from "./../model/user_model.js";
 
 
 let signup = async (req,res) => {
@@ -387,10 +388,37 @@ let trigger_new_pass = async (req,res) => {
 
 
 
-let profile = (req,res) => {
+let profile = async (req,res) => {
     try{
 
+        const obj  = {
+            target_id : req.user
+        };
+
+        const payload = await user_model.get_profile(obj);
+
+        if(payload.status == false && payload.not_found==true){
+            return res.status(404).json(payload);
+        } else if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            message:error.message,
+            stack:error.stack,
+            system:"Internal Server Error At Profile Controller",
+            name:error.name
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Profile"
+        });
+
 
     };
 };

@@ -161,7 +161,7 @@ let get_org_via_slug = async (req,res) => {
 let update = async (req,res) => {
     try{
 
-        const {name,slug,description,website_url,contact_email,access_mode,org_id} = req.body;
+        const {name,slug,description,website_url,contact_email,access_mode} = req.body;
 
         const obj = {
             name:name?.trim(),
@@ -170,7 +170,7 @@ let update = async (req,res) => {
             website_url:website_url?.trim(),
             contact_email:contact_email?.trim(),
             access_mode:access_mode?.trim(),
-            org_id,
+            org_id:req.params.id,
             caller_id:req.user
         };
 
@@ -204,10 +204,10 @@ let update = async (req,res) => {
 let update_logo = async (req,res) => {
     try{
 
-        const {org_id,image_url} = req.body;
+        const {image_url} = req.body;
 
         const obj = {
-            org_id,
+            org_id:req.params.id,
             image_url:image_url?.trim(),
             caller_id : req.user
         };
@@ -242,10 +242,10 @@ let update_logo = async (req,res) => {
 let update_cover = async (req,res) => {
     try{
 
-        const {org_id,image_url} = req.body;
+        const {image_url} = req.body;
 
         const obj = {
-            org_id,
+            org_id:req.params.id,
             image_url:image_url?.trim(),
             caller_id:req.user
         }
@@ -280,7 +280,7 @@ let delete_org = async (req,res) => {
     try{
 
         const obj = {
-            org_id:req.params.org_id,
+            org_id:req.params.id,
             caller_id:req.user
         };
 
@@ -314,7 +314,7 @@ let member_list = async (req,res) => {
     try{
 
         const obj = {
-            org_id:req.params.org_id,
+            org_id:req.params.id,
             offset:req.params.offset,
             limit:req.params.limit
         };
@@ -346,10 +346,10 @@ let member_list = async (req,res) => {
 let join_request = async (req,res) => {
     try{
 
-        const {org_id,role} = req.body;
+        const {role} = req.body;
 
         const obj = {
-            org_id,
+            org_id:req.params.id,
             role:role?.trim().toUpperCase(),
             user_id:req.user
         };
@@ -385,12 +385,12 @@ let join_request = async (req,res) => {
 let verify = async (req,res) => {
     try{
 
-        const {org_id,assigned_role,target_user_id} = req.body;
+        const {assigned_role} = req.body;
 
         const obj = {
-            org_id,
+            org_id:req.params.id,
             assigned_role:assigned_role?.trim().toUpperCase(),
-            target_user_id,
+            target_user_id:req.params.userId,
             caller_id:req.user
         };
 
@@ -424,12 +424,12 @@ let verify = async (req,res) => {
 let change_role = async (req,res) => {
     try{
 
-        const {org_id,target_user_id,new_role} = req.body;
+        let new_role_ = req.params.role;
 
         const obj = {
-            org_id,
-            target_user_id,
-            new_role:new_role?.trim().toUpperCase(),
+            org_id:req.params.id,
+            target_user_id:req.params.userId,
+            new_role:new_role_?.trim().toUpperCase(),
             caller_id:req.user
         };
 
@@ -464,9 +464,9 @@ let remove_member = async (req,res) => {
     try{
 
         const obj = {
-            target_user_id:req.params.target_user_id,
+            target_user_id:req.params.userId,
             caller_id:req.user,
-            org_id:req.params.org_id
+            org_id:req.params.id
         };
 
         const payload = await org_model.remove_member(obj);
@@ -500,7 +500,7 @@ let list_pending_members = async (req,res) => {
     try{
 
         const obj = {
-            org_id:req.params.org_id,
+            org_id:req.params.id,
             offset:req.params.offset,
             limit:req.params.limit    
         };

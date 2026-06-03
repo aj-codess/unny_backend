@@ -1,10 +1,11 @@
 import user_model from "./../model/user_model.js";
 
+// get public profile
 let get_profile = async (req,res) => {
     try{
 
         const obj  = {
-            target_id : req.user
+            target_id : req.params.id
         };
 
         const returned_payload = await user_model.get_profile(obj);

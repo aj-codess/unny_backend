@@ -35,7 +35,7 @@ DO $$ BEGIN
     CREATE TYPE access_mode_type AS ENUM ('open', 'closed');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
-
+    
 DO $$ BEGIN
     CREATE TYPE notif_channel AS ENUM ('in_app', 'email');
 EXCEPTION WHEN duplicate_object THEN NULL;

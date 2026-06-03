@@ -3,11 +3,9 @@ import course_model from "./../model/course_model.js";
 let get_course = async (req,res) => {
     try{
 
-        const status_ = req.params.status;
-
         const obj = {
             organization_id:req.params.org_id,
-            status:status_?.trim().toUpperCase(),
+            status : "ACTIVE",
             limit:req.params.limit,
             offset:req.params.offset
         };
@@ -98,10 +96,10 @@ let create_course = async (req,res) => {
 let get_via_slug = async (req,res) => {
     try{
 
-        const slug = req.params.slug;
+        const slug = req.params.slug
 
         const obj = {
-            slug:slug?.trim().toLowerCase()
+            slug:slug?.trim()
         };
 
         const payload = await course_model.get_via_slug(obj);
@@ -136,14 +134,14 @@ let get_via_slug = async (req,res) => {
 let update_meta_data = async (req,res) => {
     try{
 
-        const {title,course_code,description,course_id} = req.body;
+        const {title,course_code,description} = req.body;
 
         const obj = {
             caller_id:req.user,
-            title:title?.trim().toLowerCase(),
+            title:title?.trim(),
             couser_code:course_code?.trim(),
-            description:description?.trim().toLowerCase(),
-            course_id,
+            description:description?.trim(),
+            course_id:req.params.id,
             caller_id:req.user
         };
 
@@ -179,10 +177,10 @@ let update_meta_data = async (req,res) => {
 let load_date = async (req,res) => {
     try{
 
-        const {course_id,cover_image_url} = req.body;
+        const {cover_image_url} = req.body;
 
         const obj = {
-            course_id,
+            course_id:req.params.id,
             cover_image_url:cover_image_url?.trim(),
             caller_id:req.user
         };
@@ -220,7 +218,7 @@ let archive = async (req,res) => {
     try{
 
         const obj = {
-            course_id : req.params.course_id,
+            course_id : req.params.id,
             caller_id : req.user
         };
 
@@ -257,7 +255,7 @@ let delete_course = async (req,res) => {
     try{
 
         const obj = {
-            course_id : req.params.course_id
+            course_id : req.params.id
         };
 
         const payload = await course_model.delete_course(obj);
@@ -294,7 +292,7 @@ let enroll = async (req,res) => {
     try{
 
         const obj = {
-            course_id : req.params.course_id,
+            course_id : req.params.id,
             user_id : req.user
         };
 
@@ -335,7 +333,7 @@ let enrolled = async (req,res) => {
     try{
 
         const obj = {
-            course_id:req.params.course_id,
+            course_id:req.params.id,
             offset:req.params.offset,
             limit:req.params.limit
         };
@@ -366,11 +364,9 @@ let enrolled = async (req,res) => {
 let unenroll_student = async (req,res) => {
     try{
 
-        const {course_id,target_id} = req.body;
-
         const obj = {
-            course_id,
-            target_user_id:target_id?target_id:null,
+            course_id:req.params.id,
+            target_user_id:req.params.target_id?req.params.target_id:null,
             caller_id: req.user
         };
 
@@ -407,7 +403,7 @@ let pin = async (req,res) => {
     try{
 
         const obj = {
-            course_id : req.params.course_id,
+            course_id : req.params.id,
             user_id : req.user
         };
 
@@ -447,7 +443,7 @@ let unpin = async (req,res) => {
 
         const obj = {
             user_id:req.user,
-            course_id:req.params.course_id
+            course_id:req.params.id
         };
 
         const payload = await course_model.unpin(obj);
@@ -480,12 +476,10 @@ let unpin = async (req,res) => {
 let get_docs = async (req,res) => {
     try{
 
-        const {course_id,offset,limit} = req.body;
-
         const obj = {
-            course_id,
-            offset,
-            limit,
+            course_id:req.params.id,
+            offset:req.params.offset,
+            limit:req.params.limit,
             user_id:req.user
         };
 
@@ -516,7 +510,6 @@ let upload_doc = async (req,res) => {
     try{
 
         const {
-            course_id,
             title,
             description,
             file_url,
@@ -527,10 +520,10 @@ let upload_doc = async (req,res) => {
         } = req.body;
 
         const obj = {
-            course_id,
+            course_id:req.params.id,
             uploader_id:req.user,
-            title:title?.trim().toLowerCase(),
-            description:description?.trim().toLowerCase(),
+            title:title?.trim(),
+            description:description?.trim(),
             file_url:file_url?.trim(),
             thumbnail_url:thumbnail_url?.trim(),
             file_type:file_type?.trim(),
@@ -568,7 +561,34 @@ let upload_doc = async (req,res) => {
 let get_doc_about = async (req,res) => {
     try{
 
+        const obj = {
+            course_id:req.params.id,
+            doc_id:req.params.docId
+        };
+
+        const payload = await course_model.get_doc_about(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == true){
+            return res.status(200).json(payload);
+        } else{
+            return res.status(500).json(payload);
+        };
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Get Document About Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Document Meta Data"
+        });
 
     };
 };
@@ -578,7 +598,39 @@ let get_doc_about = async (req,res) => {
 let update_doc_about = async (req,res) => {
     try{
 
+        const {title,description} = req.body;
+
+        const obj = {
+            title:title?.trim(),
+            doc_id:req.params.docId,
+            course_id:req.params.id,
+            description:description?.trim(),
+            caller_id:req.user
+        };
+
+        const payload = await course_model.update_doc_about(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Update Document About Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Updating Document Meta Data"
+        });
 
     };
 };
@@ -588,7 +640,44 @@ let update_doc_about = async (req,res) => {
 let doc_visibility = async (req,res) => {
     try{
 
+        const visibility = req.params.visibility;
+        let bool;
+        if(visibility.trim().toUpperCase=="TRUE"){
+            bool = true;
+        } else{
+            bool = false;
+        };
+
+        const obj = {
+            caller_id:req.user,
+            visibility:bool,
+            course_id:req.params.id,
+            doc_id:req.params.docId
+        };
+
+        const payload = await course_model.doc_visibility(obj);
+
+        if(payload.status == false && payload.not_found == true){
+            return res.status(404).json(payload);
+        } else if(payload.status == true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Document Visibility Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Changing Document Visibility"
+        });
 
     };
 };
@@ -598,7 +687,35 @@ let doc_visibility = async (req,res) => {
 let delete_doc = async (req,res) => {
     try{
 
+        const obj = {
+            doc_id:req.params.docId,
+            course_id:req.params.id,
+            caller_id:req.user
+        };
+
+        const payload = await course_model.delete_doc(obj);
+
+        if(payload.status==false && payload.not_found==true){
+            return res.status(404).json(payload);
+        } else if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            system:"Internal Server Error At Delete Document Controller",
+            name:error.name,
+            stack:error.stack,
+            message:error.message
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Deleting Document"
+        });
 
     };
 };

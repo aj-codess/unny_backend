@@ -99,8 +99,8 @@ organizations.delete("/:id/members/:userId",(req,res)=>{
 
 // auth
 // admin level
-// get list of unverified lecturers
-organizations.get("/:id/members/:userId",(req,res)=>{
+// get list of non members who have requested to join
+organizations.get("/:id/pending_members",(req,res)=>{
     auth_mid(req,res);
     organization_controller.list_pending_members(req,res);
 });
