@@ -14,31 +14,31 @@ users.get("/:id",(req,res)=>{
 });
 
 // update profile
-users.patch("/:id",(req,res)=>{
+users.patch("/",(req,res)=>{
     auth_mid(req,res);
     user_controller.update_profile(req,res);
 });
 
 // upload or replace profile image
-users.patch("/:id/avatar",(req,res)=>{
+users.patch("/avatar",(req,res)=>{
     auth_mid(req,res);
     user_controller.change_profile_image(req,res);
 });
 
 // upload or update cover image
-users.patch("/:id/cover",(req,res)=>{
+users.patch("/cover",(req,res)=>{
     auth_mid(req,res);
     user_controller.change_cover_image(req,res);
 });
 
 // change own account password
-users.patch("/:id/password",(req,res)=>{
+users.patch("/password",(req,res)=>{
     auth_mid(req,res);
     user_controller.change_account_password(req,res);
 });
 
 // soft delete own account
-users.delete("/:id",(req,res)=>{
+users.delete("/",(req,res)=>{
     auth_mid(req,res);
     user_controller.delete_account(req,res);
 });

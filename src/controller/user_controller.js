@@ -235,7 +235,7 @@ let get_user_orgs = async (req,res) => {
     try{
 
         const obj = {
-            target_id : req.user,
+            target_id : req.params.id || req.user,
             offset : req.params.offset,
             limit : req.params.limit
         };
@@ -267,7 +267,7 @@ let get_user_course_enrolled = async (req,res) => {
     try{
 
         const obj = {
-            target_id : req.user,
+            target_id : req.params.id || req.user,
             offset : req.params.offset,
             limit : req.params.limit
         };
@@ -300,7 +300,7 @@ let get_pinned_courses = async (req,res) => {
     try{
 
         const obj = {
-            target_id : req.user,
+            target_id : req.params.id || req.user,
             offset : req.params.offset,
             limit : req.params.limit
         };
