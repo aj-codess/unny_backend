@@ -234,10 +234,20 @@ let delete_account = async (req,res) => {
 let get_user_orgs = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
             target_id : req.params.id || req.user,
-            offset : req.params.offset,
-            limit : req.params.limit
+            offset : offset_,
+            limit : limit_
         };
 
         const payload = await user_model.get_user_orgs(obj);
@@ -266,10 +276,20 @@ let get_user_orgs = async (req,res) => {
 let get_user_course_enrolled = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
             target_id : req.params.id || req.user,
-            offset : req.params.offset,
-            limit : req.params.limit
+            offset : offset_,
+            limit : limit_
         };
 
         const payload = await user_model.get_user_course_enrolled(obj);
@@ -299,10 +319,20 @@ let get_user_course_enrolled = async (req,res) => {
 let get_pinned_courses = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
             target_id : req.params.id || req.user,
-            offset : req.params.offset,
-            limit : req.params.limit
+            offset : offset_,
+            limit : limit_
         };
 
         const payload = await user_model.get_pinned_courses(obj);

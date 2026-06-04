@@ -1,4 +1,4 @@
-
+import search_model from "./../model/search_model.js";
 
 let all = (req,res) => {
     try{

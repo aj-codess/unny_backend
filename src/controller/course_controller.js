@@ -3,11 +3,21 @@ import course_model from "./../model/course_model.js";
 let get_course = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
             organization_id:req.params.org_id,
             status : "ACTIVE",
-            limit:req.params.limit,
-            offset:req.params.offset
+            limit:limit_,
+            offset:offset_
         };
 
         const payload = await course_model.get_course(obj);
@@ -332,10 +342,20 @@ let enroll = async (req,res) => {
 let enrolled = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
             course_id:req.params.id,
-            offset:req.params.offset,
-            limit:req.params.limit
+            offset:offset_,
+            limit:limit_
         };
 
         const payload = await course_model.enrolled(obj);
@@ -476,10 +496,20 @@ let unpin = async (req,res) => {
 let get_docs = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
             course_id:req.params.id,
-            offset:req.params.offset,
-            limit:req.params.limit,
+            offset:offset_,
+            limit:limit_,
             user_id:req.user
         };
 

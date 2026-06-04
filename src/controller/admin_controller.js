@@ -3,9 +3,19 @@ import admin_model from "./../model/admin_model.js";
 let getAllUsers = async(req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
-            offset:req.params.offset,
-            limit:req.params.limit
+            offset:offset_,
+            limit:limit_
         };
 
         const payload = await admin_model.get_all_users(obj);

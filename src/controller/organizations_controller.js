@@ -3,9 +3,19 @@ import org_model from "./../model/org_model.js";
 let list = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
-            offset:req.params.offset,
-            limit:req.params.limit
+            offset:offset_,
+            limit:limit_
         };
 
         const payload = await org_model.list(obj);
@@ -34,9 +44,19 @@ let list = async (req,res) => {
 let org_and_owner_list = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
-            offset:req.params.offset,
-            limit:req.params.limit
+            offset:offset_,
+            limit:limit_
         };
 
         const payload = await org_model.org_and_owner_list(obj);
@@ -313,10 +333,20 @@ let delete_org = async (req,res) => {
 let member_list = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
             org_id:req.params.id,
-            offset:req.params.offset,
-            limit:req.params.limit
+            offset:offset_,
+            limit:limit_
         };
 
         const payload = await org_model.member_list(obj);
@@ -499,10 +529,20 @@ let remove_member = async (req,res) => {
 let list_pending_members = async (req,res) => {
     try{
 
+        const limit_  = parseInt(req.params.limit,  10);
+        const offset_ = parseInt(req.params.offset, 10);
+
+        if (isNaN(limit_) || isNaN(offset_) || limit_ < 1 || offset_ < 0) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid pagination parameters"
+            });
+        };
+
         const obj = {
             org_id:req.params.id,
-            offset:req.params.offset,
-            limit:req.params.limit    
+            offset:offset_,
+            limit:limit_    
         };
 
         const payload = await org_model.list_pending_members(obj);
