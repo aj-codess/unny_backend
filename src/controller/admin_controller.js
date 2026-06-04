@@ -1,37 +1,131 @@
+import admin_model from "./../model/admin_model.js";
 
-let getAllUsers = (req,res) => {
+let getAllUsers = async(req,res) => {
     try{
 
+        const obj = {
+            offset:req.params.offset,
+            limit:req.params.limit
+        };
+
+        const payload = await admin_model.get_all_users(obj);
+
+        if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            name:error.name,
+            stack:error.stack,
+            message:error.message,
+            system:"Internal Server Error At Getting Users Via Admin Comtroller"
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting Users"
+        });
 
     };
 };
 
 
 
-let activate = (req,res) => {
+let activate = async (req,res) => {
     try{
 
+        const obj = {
+            target_id:req.params.id
+        };
+
+        const payload = await admin_model.activate_user(obj);
+
+        if(payload.status==false && payload.not_found==true){
+            return res.status(404).json(payload);
+        } else if(payload.status==true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            name:error.name,
+            stack:error.stack,
+            message:error.message,
+            system:"Internal Server Error At Activate User Controller"
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Activating Users Account"
+        });
 
     };
 };
 
 
 
-let deactivate = (req,res) => {
+let deactivate = async (req,res) => {
     try{
 
+        const obj = {
+            target_id : req.params.id
+        };
+
+        const payload = await admin_model.deactivate_user(obj);
+
+        if(payload.status==false && payload.not_found==true){
+            return res.status(404).json(payload);
+        } else if(payload.status == true){
+            return res.status(200).json(payload);
+        };
+
+        return res.status(500).json(payload);
+
     } catch(error){
+
+        console.error({
+            name:error.name,
+            stack:error.stack,
+            message:error.message,
+            system:"Internal Server Error At Deactivate Controller"
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Deactivating Users"
+        });
 
     };
 };
 
 
-let statistic = (req,res) => {
+let statistic = async (req,res) => {
     try{
 
+        const statistic_payload = await admin_model.get_stats();
+
+        return res.status(200).json(statistic_payload);
+
     } catch(error){
+
+        console.error({
+            name:error.name,
+            stack:error.stack,
+            message:error.message,
+            system:"Internal Server Error At Get Statistic Controller"
+        });
+
+        return res.status(500).json({
+            status:false,
+            message:"Internal Server Error Getting User Statistic"
+        });
 
     };
 };

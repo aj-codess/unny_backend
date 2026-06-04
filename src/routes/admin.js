@@ -25,7 +25,7 @@ admin.patch("/users/:id/activate",(req,res)=>{
 });
 
 // deactivate
-admin.patch("/users/:id/dactivate",(req,res)=>{
+admin.patch("/users/:id/deactivate",(req,res)=>{
     // manually use middleware here
     auth_mid(req,res);
     admin_controller.deactivate(req,res);

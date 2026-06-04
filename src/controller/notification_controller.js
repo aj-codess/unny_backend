@@ -1,3 +1,4 @@
+import notification_model from "./../model/notification_model.js";
 
 let get_notif = (req,res) => {
     try{
