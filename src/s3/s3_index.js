@@ -1,6 +1,7 @@
-    import S3Helper from "./s3_helper.js";
+import S3Helper from "./s3_helper.js";
 import dotenv from "dotenv";
-import utility from "./../services/idGen_utility.js";
+import snow from "./../utility/id_entry.js"
+
 
 dotenv.config();
 
@@ -50,7 +51,7 @@ const get_presigned_s3_url = async (action,userId,fileName) => {
             return obj;
         };
 
-        let upload_object_key = `${action_enum[action]}/${userId}/${utility.current_time}/${fileName}`;
+        let upload_object_key = `${action_enum[action]}/${userId}/${snow.get_current_time()}/${fileName}`;
 
         const uploadUrl = await S3Helper.generatePresignedUrlAsync(process.env.S3_BUCKET, upload_object_key, 900);
         const fileUrl = `https://${process.env.S3_BUCKET}.s3${process.env.S3_REGION}.amazonaws.com/${upload_object_key}`;

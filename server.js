@@ -22,7 +22,8 @@ import s3_index from "./src/s3/s3_index.js";
 dotenv.config();
 const PORT=process.env.PORT || 8080;
 
-s3_index.init_s3(process.env.AWS_REGION);
+// talks directly to aws
+//s3_index.init_s3(process.env.AWS_REGION);
 
 const snowflake_is_initialized = snow.snow_init(1,0);
 if(snowflake_is_initialized==true){
