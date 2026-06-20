@@ -831,5 +831,5 @@ const collection = {
   ]
 };
 
-fs.writeFileSync("./unny_postman_collection.json", JSON.stringify(collection, null, 2));
+fs.writeFileSync("/home/claude/unny_postman_collection.json", JSON.stringify(collection, null, 2));
 console.log("Done");

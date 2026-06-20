@@ -9,7 +9,8 @@ const auth = express.Router();
 
 // open route
 auth.post("/register",(req,res)=>{
-    auth_controller.signup(req,res);
+    //auth_controller.signup(req,res);
+    console.log("there was a server Hit");
 });
 
 
